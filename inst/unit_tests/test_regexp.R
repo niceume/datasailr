@@ -1,0 +1,60 @@
+test_regexp  <- function(){
+  data(mtcars)
+  mtcars[,"name"] = rownames(mtcars)
+  
+  code = '
+germany = re/(^Merc|^Porsche|^Volvo)/
+usa = re/(^Hornet|^Cadillac|^Lincoln|^Chrysler|^Dodge|^AMC|^Camaro|^Chevrolet|^Pontiac|^Ford)/
+japan = re/(^Mazda|^Datsun|^Honda|^Toyota)/
+austoralia = re/(^Valiant)/
+france=re/(^Duster)/
+italy=re/(^Fiat|^Ferrari|^Maserati)/
+Uk = re/(^Lotus)/
+
+power = ""
+if( hp > 145 ){
+  power = "powerful"
+}else if( 145 >= hp && hp > 0){
+  power = "low power"
+}else{
+  print("hp variable has missing value")
+  power = "unknown power"
+}
+
+country = ""
+if(name =~ germany){
+  country = "Germany"
+}else if(name =~ usa){
+  country = "USA"
+}else if(name =~ japan){
+  country = "Japan"
+}else if(name =~ austoralia){
+  country = "Austoralia"
+}else if(name =~ france){
+  country = "France"
+}else if(name =~ italy){
+  country = "Italy"
+}else if(name =~ uk){
+  country = "UK"
+}else{
+  country = "other country"
+}
+
+description = name + " is " +  power + " " + country + " made car."
+
+print("The current row process finished.\n");
+'
+
+  mtcars_result = dataSailr::sail(mtcars, code)
+  mtcars2 = mtcars
+
+  mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )
+  country_list = c( rep("Japan", 3), rep("USA", 2), "Austoralia", "France", rep("Germany", 6), rep("USA", 3),  "Italy", rep("Japan",3), rep("USA",4), "Italy", "Germany", "UK", "USA", rep("Italy",2), "Germany")
+  mtcars2$country = country_list
+  mtcars2$description = paste0(mtcars2$_name_ , " is ", mtcars2$power, " ", mtcars2$country, " made car.")
+
+  checkEquals( mtcars_result[,"power"] , mtcars2[,"power"])
+  checkEquals( mtcars_result[,"country"] , mtcars2[,"country"])
+  checkEquals( mtcars_result[,"description"] , mtcars2[,"description"])
+
+}

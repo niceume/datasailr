@@ -1,0 +1,41 @@
+# The following Makefile assumes using MSYS2 on Windows.
+# MSYS2 allows UNIX like environment.
+
+CXX_STD=CXX11
+CXX11STD = -std=c++11
+
+ONIGMO_PROJ_NAME=Onigmo
+ONIGMO_INSTALL=$(ONIGMO_PROJ_NAME)/BUILD_$(R_ARCH)
+ONIGMO_LIB=$(ONIGMO_INSTALL)/lib
+ONIGMO_INCLUDE=$(ONIGMO_INSTALL)/include
+
+PKG_CXXFLAGS=-Ilibsailr  # Option for compiler
+PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr -L$(ONIGMO_LIB) -l:libonigmo.a -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+# Note: -lxxx looks up for libraries in an order of libxxx.so and libxxx.a
+# Note: -l:libyyy.a directly looks up for the library with the filename of libyyy.a
+# https://stackoverflow.com/questions/6578484/telling-gcc-directly-to-link-a-library-statically
+
+src_dir = $(shell pwd)
+
+# compile self-contained subdirectory
+# http://www.hep.by/gnu/r-patched/r-exts/R-exts_14.html#SEC14
+# https://stackoverflow.com/questions/17133550/building-shared-libraries-in-subdirectories
+
+
+.PHONY: all libsailr/libsailr.a
+
+all: $(SHLIB)
+$(SHLIB): libsailr/libsailr.a
+
+libsailr/libsailr.a: $(ONIGMO_LIB)/onigmo.a
+	@echo "compiling libsailr engine."
+	$(MAKE) build --directory libsailr ONIG_INCLUDE_DIR=../$(ONIGMO_INCLUDE)
+
+
+$(ONIGMO_LIB)/onigmo.a:
+	cd $(ONIGMO_PROJ_NAME)/; ./autogen.sh; ./configure --prefix=$(src_dir)/$(ONIGMO_INSTALL); make; make install;  cd ..; 
+	rm -f $(ONIGMO_LIB)/onigmo.dll
+	rm -f $(ONIGMO_LIB)/libonigmo.dll.a
+	rm -f $(ONIGMO_LIB)/libonigmo.la
+	rm -f $(ONIGMO_LIB)/onigmo.so
+
