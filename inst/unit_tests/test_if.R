@@ -24,7 +24,7 @@ if( mpg > 20){
 description = name + " is " + power + " " + efficient + " car with " +  num_to_str(cyl) + " cylinders."
   '
 
-  mtcars_result = dataSailr::sail(mtcars, code)
+  mtcars_result = datasailr::sail(mtcars, code)
   mtcars2 = mtcars
 
   mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )

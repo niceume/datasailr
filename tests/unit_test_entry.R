@@ -1,11 +1,11 @@
-pkg = "dataSailr"
+pkg = "datasailr"
 
-# If RUnit and dataSailr exist on this system, load and attach them. Then, run test.
+# If RUnit and datasailr exist on this system, load and attach them. Then, run test.
 if(requireNamespace("RUnit", quietly = TRUE) && 
-   requireNamespace("dataSailr", quietly = TRUE )){
+   requireNamespace("datasailr", quietly = TRUE )){
   # Load & attach
   library(RUnit)
-  library(dataSailr)
+  library(datasailr)
 
   # Test suit definition & Run tests.
   testSuite <- defineTestSuite( name = paste0( pkg, " Unit Tests") , 

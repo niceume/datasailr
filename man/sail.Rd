@@ -4,7 +4,7 @@
 \alias{sail}
 \title{run Sailr script for dataset }
 \description{
-  dataSailr::sail() is the main function of this package. This function takes data.frame as the 1st argument and Sailr script as the 2nd argument. (Note that the 1st argument is data.frame, so you can use this package with %>% operator (in magrittr package), and combine this with functions of dplyr.
+  datasailr::sail() is the main function of this package. This function takes data.frame as the 1st argument and Sailr script as the 2nd argument. (Note that the 1st argument is data.frame, so you can use this package with %>% operator (in magrittr package), and combine this with functions of dplyr.
 }
 \usage{
   sail( df, code, fullData = FALSE)

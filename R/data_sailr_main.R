@@ -17,5 +17,5 @@ sail = function( df , code , fullData = FALSE){
 
 
 author = function(){
-  print("dataSailr is actively developed by Toshi Umehara (@niceume).")
+  print("DataSailr is actively developed by Toshi Umehara (@niceume).")
 }

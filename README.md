@@ -1,8 +1,8 @@
-# About dataSailr
+# About DataSailr
 
 DataSailr is an R package which enables row by row data manipulation. 
 
-The data manipulation process is written in Sailr, a language designed specifically for data manipulation. The internal data manipulation engine is a library called libsailr, which is written in C/C++ and the processing speed is relatively fast. If you are interested in dataSailr's internal implementation, please also have a look at libsailr library. 
+The data manipulation process is written in Sailr, a language designed specifically for data manipulation. The internal data manipulation engine is a library called libsailr, which is written in C/C++ and the processing speed is relatively fast. If you are interested in DataSailr's internal implementation, please also have a look at libsailr library. 
 
 This package is still in development. Please let me know if you find bugs or inconsistent behaviors. The documentation is not enough, so I am willing to explain it if you find something difficult.
 
@@ -11,15 +11,17 @@ This package is still in development. Please let me know if you find bugs or inc
 
 DataSailr package brings intuitive and fast row by row data manipulation to R. The data manipulation instruction for each row is writtein in Sailr. Sailr is an easy script language designed specially for data manipulation. In vanilla R, dataframe is manipulated using column vector and vector operations. When summarizing dataframe, column wise calculation is intuitive and ideal, but when manipulating dataframe you need to see each record in the row direction. For example, when calculating body mass index (BMI) from body weight and height, calculation needs to be done for each row. Categorizing each person based on his/her BMI is also done for each row.
 
-A famous R package, dplyr, has been improving the same kind of points. It enables data manipulation without thinking much about column vectors. Pipe operator, %>% in magrittr package, and dplyr functions realize intuitive data manipulation flow. The dataSailr package enables the same kind of thing with a single Sailr code. The two packages do not compete, and I intend to implement dataSailr as it also can work with dplyr.
+A famous R package, dplyr, has been improving the same kind of points. It enables data manipulation without thinking much about column vectors. Pipe operator, %>% in magrittr package, and dplyr functions realize intuitive data manipulation flow. The DataSailr package enables the same kind of thing with a single Sailr code. The two packages do not compete, and I intend to implement DataSailr as it also can work with dplyr.
 
 
 ## How to run Sailr script
 
-dataSailr::sail() is the main function of this package. This function takes data.frame as the 1st argument and Sailr script as the 2nd argument. (Note that the 1st argument is data.frame, so you can use this package with %>% operator (in magrittr package), and combine this with functions of dplyr.)
+datasailr::sail() is the main function of this package. This function takes data.frame as the 1st argument and Sailr script as the 2nd argument. (Note that the 1st argument is data.frame, so you can use this package with %>% operator (in magrittr package), and combine this with functions of dplyr.)
 
 ```
-dataSailr::sail( df, '
+library(datasailr)
+
+datasailr::sail( df, '
 <Sailr script>
 '
 )
@@ -47,15 +49,15 @@ head(mtcars,2)
 
 ### Code example
 
-Before executing the following code, install dataSailr package (and magrittr package.) Installation instruction is mentioned later in this README (Binary package is the easiest way to try, until this package becomes available on CRAN).
+Before executing the following code, install DataSailr package (and magrittr package.) Installation instruction is mentioned later in this README (Binary package is the easiest way to try, until this package becomes available on CRAN).
 
 * (Example)
 
 ```
-library(dataSailr)
+library(datasailr)
 library(magrittr)
 
-mtcars %>% dataSailr::sail('
+mtcars %>% datasailr::sail('
 if( hp > 145 ){  power = "high" }
 else if( 145 >= hp && hp > 0){ power = "low" }
 else{  print("hp variable has missing value")}
@@ -91,13 +93,13 @@ else { country = "Other" }
 
 ### Example code explanation
 
-* library(dataSailr)
-    + Make dataSailr package available.
+* library(datasailr)
+    + Make DataSailr package available.
 * library(magrittr)
-    + This is not required by dataSailr. In the above code, %>% , pipe operator, is used, and it's defined in magrittr package.
-* mtcars %>% dataSailr::sail(' .... 
-    + The 1st argument of dataSailr::sail is dataframe. In this case, %>% passes dataframe to the 1st argument.
-    + The 2nd argument of dataSailr::sail is Sailr code.
+    + This is not required by DataSailr. In the above code, %>% , pipe operator, is used, and it's defined in magrittr package.
+* mtcars %>% datasailr::sail(' .... 
+    + The 1st argument of datasailr::sail is dataframe. In this case, %>% passes dataframe to the 1st argument.
+    + The 2nd argument of datasailr::sail is Sailr code.
 * if( hp > 145 ){ ....
     + if-else statement. 
 * power = "high" 
@@ -141,7 +143,7 @@ Y = X
 
 ### Types
 
-Sailr can deal with the following types, and so does dataSailr.
+Sailr can deal with the following types, and so does DataSailr.
 
 1. Int
 2. Double
@@ -155,22 +157,22 @@ Sailr can deal with the following types, and so does dataSailr.
     + At now, there is no such way to dynamically generate regular expression object.
 
 
-R can handle vectors, list, S4 class objects, and so on. Among those R objects, dataframe usually consists of only vectors. The following list shows which data types are supported by dataSailr. Supporting vectors of numbers and strings is enogh in most of the cases of data analysis. 
+R can handle vectors, list, S4 class objects, and so on. Among those R objects, dataframe usually consists of only vectors. The following list shows which data types are supported by DataSailr. Supporting vectors of numbers and strings is enogh in most of the cases of data analysis. 
 
-* logical vector : dataSailr imports TRUE as 1, and FALSE as 0.
-* integer vector : dataSailr deals with it as integer.
-* numeric vector : dataSailr deals with it as double.
+* logical vector : DataSailr imports TRUE as 1, and FALSE as 0.
+* integer vector : DataSailr deals with it as integer.
+* numeric vector : DataSailr deals with it as double.
 * complex vector : Not supported
-* character vector : dataSailr deals with it as string.
-* factor (PLAN) : dataSailr imports it as string. (Not supported yet)
+* character vector : DataSailr deals with it as string.
+* factor (PLAN) : DataSailr imports it as string. (Not supported yet)
     + Precisely, factor is a type called S3 class. S3 class is an R type with "class" attribute and some additional attributes (such as levels) required by the class. Internally factor is just an integer vector with these attributes.
 * list : not supported.
-* S3 class objects : As mentioned in factor, the base type of S3 is a basic R type. If the basic R type is supported by dataSailr, the S3 type can be dealt from dataSailr. However, dataSailr's interpretation is not as the user's intention, but follows the internal data type. (i.e.) Factor is recognized as an integer vector.
+* S3 class objects : As mentioned in factor, the base type of S3 is a basic R type. If the basic R type is supported by DataSailr, the S3 type can be dealt from DataSailr. However, DataSailr's interpretation is not as the user's intention, but follows the internal data type. (i.e.) Factor is recognized as an integer vector.
 * S4 class objects : Not supported
-    + S4 objects are not supported. Those objects need to be converted to dataSailr types beforehand. Moreover, S4 objects are only stored in list, and list will not be supported in any case.
+    + S4 objects are not supported. Those objects need to be converted to DataSailr types beforehand. Moreover, S4 objects are only stored in list, and list will not be supported in any case.
 
 
-| Column of R data.frame |  dataSailr    | 
+| Column of R data.frame |  DataSailr    | 
 -------------------------|---------------|--
 | Integer Vector         | Int           |
 | Double (Real) Vector   | Double        | 
@@ -201,7 +203,7 @@ Only plus (+) operator can deal with strings. It can concatenate strings.
 
 * Not supported
 
-The following operators are not supported in dataSailr
+The following operators are not supported in DataSailr
 
 ```
 ++  // Increment operator
@@ -286,10 +288,10 @@ For string, empty string ("") represents missing string.
 
 Note that in vanilla R, calculation with missing value returns missing value, and missing values act like TRUE in logical vecotr. In vanilla R, filtering of vectors and dataframes is done using logical vectors. If missing values are treated like TRUE, unintended elements or rows that have missing values are extracted. For example, you are calculating BMI (body mass index) from body weight and height. One person has a missing for body weight. His/her BMI will be calculated as missing value. You would like to categorize this person as "unknown BMI" category, then missingness should be chekced first and these people should be categorized first. Otherwise, missing values in logical vector works like TRUE, so these people are categorized into some BMI categories, such as "high BMI" or "low BMI".
 
-In dataSailr, on the ohter hand, comparison operators with missing values return false except that missing is compared with missing.
+In DataSailr, on the ohter hand, comparison operators with missing values return false except that missing is compared with missing.
 
 ```
-library(dataSailr)
+library(datasailr)
 
 col1 = c(1.7, 1.5 , 1.5 , 1.65 ,  1.5)
 col2 = c(50 , 60  , 80  , NA   ,  100)
@@ -307,7 +309,7 @@ else if( bmi >= 0  ){ overweight = 0 }
 else { overweight = . }
 '
 
-new_df = dataSailr::sail( df, code , fullData = T);
+new_df = datasailr::sail( df, code , fullData = T);
 new_df
 ```
 
@@ -384,7 +386,7 @@ c is not a number.
 
 UTF8 encoding is strongly encouraged. The recommended way is to have dataframe as UTF8, and also have your code as UTF8. ASCII or latin1 is compatible with UTF8, so they must also work properly. (Your terminal encoding also need to be UTF8 for properly printing out UTF8 strings.)
  
-In dataSailr (libsailr), strings are stored just as a sequence of bytes. So even if you use other encodings, just copying and concatenating strings must work fine. Problems must happen when your source code and dataframe do not have the same encoding. Encoding of source code affects the string objects that are generated during parsing phase (=string objects that are generated before running code), dataframe encoding affects the string that are accessed via variables. 
+In DataSailr (libsailr), strings are stored just as a sequence of bytes. So even if you use other encodings, just copying and concatenating strings must work fine. Problems must happen when your source code and dataframe do not have the same encoding. Encoding of source code affects the string objects that are generated during parsing phase (=string objects that are generated before running code), dataframe encoding affects the string that are accessed via variables. 
 
 For functions that process strings, UFF8-CPP library is used internally. ( UTF8-CPP:UTF-8 with C++ in a Portable Way https://github.com/nemtrif/utfcpp )
 
@@ -421,7 +423,7 @@ if ( _rowname_ =~ germany ) {
 
 ### Date support
 
-In dataSailr(libsair), there are no specific types for dates, and dates are stored as just integers in dataSailr. The number represents the day from Jan 1st 1970, which is the same as UNIX date. (Be careful that SAS software also store date information as numbers, but their starting date is 1/1/1960. https://support.sas.com/resources/papers/proceedings12/244-2012.pdf )
+In DataSailr(libsair), there are no specific types for dates, and dates are stored as just integers in DataSailr. The number represents the day from Jan 1st 1970, which is the same as UNIX date. (Be careful that SAS software also store date information as numbers, but their starting date is 1/1/1960. https://support.sas.com/resources/papers/proceedings12/244-2012.pdf )
 
 Internally for date calculation, date library is used ( "date.h" is a header-only library which builds upon <chrono>. https://github.com/HowardHinnant/date ).
 
@@ -437,15 +439,15 @@ date_format( unix_date, str_format )  // This format should follow C++'s std::ch
 
 ## For SAS software users
 
-List of major differences between dataSailr and DATA Step in SAS software.
+List of major differences between DataSailr and DATA Step in SAS software.
 
 1. DataSailr if-else statements use curly brackets { }. SAS software uses if-then-else style.
 2. DataSailr if-else curly brackets can hold multiple statemnts. SAS software needs to use do statement for multiple statements. i.e. if-then-do-end style. 
-3. OUTPUT statement is not supported in dataSailr yet.
+3. OUTPUT statement is not supported in DataSailr yet.
 4. RETAIN statement is not supported and there is no plan to support it in the future.
-5. The default character encoding of dataSailr is UTF8. 
-6. Not only semicolon but also new line means the end of each statement in dataSailr. In SAS software, semicolons are always required.
-7. (CAUTION) Date starts from Jan. 1st 1970, which is same as UNIX date. SAS software also stores date as number that is a day from 1/1/1960. Meaning NEVER DIRECTLY USE SAS NUMBER FOR DATES in dataSailr(libsailr).
+5. The default character encoding of DataSailr is UTF8. 
+6. Not only semicolon but also new line means the end of each statement in DataSailr. In SAS software, semicolons are always required.
+7. (CAUTION) Date starts from Jan. 1st 1970, which is same as UNIX date. SAS software also stores date as number that is a day from 1/1/1960. Meaning NEVER DIRECTLY USE SAS NUMBER FOR DATES in DataSailr(libsailr).
 8. Column name does not have label (In SAS software, dataset column can have a description called label.)
 
 
@@ -454,10 +456,10 @@ List of major differences between dataSailr and DATA Step in SAS software.
 
 DataSailr does not compete with dplyr. DataSailr focuses on row by row manipulation, and dplyr has more functionalities about the whole dataframe manipulation (e.g. arrange(), select(), group_by() & summarize()).
 
-dataSailr's special feature is that you can write multiple row level manipulations in one code, though dplyr enables it with a chain of functions.
+DataSailr's special feature is that you can write multiple row level manipulations in one code, though dplyr enables it with a chain of functions.
 
 
-|                        |     dataSailr                  |     dplyr            |
+|                        |     DataSailr                  |     dplyr            |
 -------------------------|--------------------------------|------------------------ 
 | How to manipulate data | Apply a single Sailr code      | Apply multiple functions using (%>%) |
 | Create new column      | assign value to new variable   | mutate()             |
@@ -484,10 +486,10 @@ Binaries will be provided.
 ```
 # Strart R interpreter
 # Linux
-install.packages('dataSailr_<version>_<arch>.tar.gz', lib='<directory>',repos = NULL)
+install.packages('datasailr_<version>_<arch>.tar.gz', lib='<directory>',repos = NULL)
 
 # Windows
-install.packages('dataSailr_<version>_<arch>.zip', lib='<directory>',repos = NULL)
+install.packages('datasailr_<version>_<arch>.zip', lib='<directory>',repos = NULL)
 ```
 
 (ref.) https://stackoverflow.com/questions/14806705/manually-downloading-and-installing-packages-in-r
@@ -497,14 +499,14 @@ install.packages('dataSailr_<version>_<arch>.zip', lib='<directory>',repos = NUL
 #### Linux(ubuntu)
 
 ```
-git clone <dataSailr repository>
-cd dataSailr/src
+git clone <datasailr repository>
+cd datasailr/src
 ./update_3rd_party_library.sh  # This downloads Onigmo library.
 cd ..
 autoconf  # Generate configure script.
 cd ..
 
-R CMD INSTALL dataSailr --preclean --no-multiarch --build
+R CMD INSTALL datasailr --preclean --no-multiarch --build
 ```
 
 Done. 
@@ -560,7 +562,7 @@ BINPREF = c:/msys64/mingw32b/bin/
     + R CMD INSTALL ....
 
 
-## Inside dataSailr
+## Inside DataSailr
 
 ### Architecture summary
 

@@ -9,7 +9,7 @@ japan = re/(^Mazda|^Datsun|^Honda|^Toyota)/
 austoralia = re/(^Valiant)/
 france=re/(^Duster)/
 italy=re/(^Fiat|^Ferrari|^Maserati)/
-Uk = re/(^Lotus)/
+uk = re/(^Lotus)/
 
 power = ""
 if( hp > 145 ){
@@ -45,13 +45,13 @@ description = name + " is " +  power + " " + country + " made car."
 print("The current row process finished.\n");
 '
 
-  mtcars_result = dataSailr::sail(mtcars, code)
+  mtcars_result = datasailr::sail(mtcars, code)
   mtcars2 = mtcars
 
   mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )
   country_list = c( rep("Japan", 3), rep("USA", 2), "Austoralia", "France", rep("Germany", 6), rep("USA", 3),  "Italy", rep("Japan",3), rep("USA",4), "Italy", "Germany", "UK", "USA", rep("Italy",2), "Germany")
   mtcars2$country = country_list
-  mtcars2$description = paste0(mtcars2$_name_ , " is ", mtcars2$power, " ", mtcars2$country, " made car.")
+  mtcars2$description = paste0(mtcars2$name , " is ", mtcars2$power, " ", mtcars2$country, " made car.")
 
   checkEquals( mtcars_result[,"power"] , mtcars2[,"power"])
   checkEquals( mtcars_result[,"country"] , mtcars2[,"country"])

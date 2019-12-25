@@ -1,4 +1,5 @@
 test_sail = function(){
+  pkg = "datasailr"
   library(RUnit)
   # Test suit definition & Run tests.
   testSuite <- defineTestSuite( name = paste0( pkg, " Unit Tests") , 

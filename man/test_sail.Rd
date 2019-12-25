@@ -2,9 +2,9 @@
 
 \name{test_sail}
 \alias{test_sail}
-\title{run dataSailr test scripts }
+\title{run DataSailr test scripts }
 \description{
-  dataSailr::test_sail() run test scripts for dataSailr package.
+  datasailr::test_sail() run test scripts for DataSailr package.
 }
 \usage{
   test_sail()

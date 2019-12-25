@@ -420,20 +420,20 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
       
       for(idx = 0; idx < updated_vec.size(); ++idx ){
         if(updated_vec[idx] == UPDATED){
-          printf("%d : (UPDATED) Address: %p , Value: ", idx, strvec[idx]); Rcpp::Rcout << *(strvec[idx]) << std::endl;
+          IF_DEBUG( printf("%d : (UPDATED) Address: %p , Value: ", idx, strvec[idx]); Rcpp::Rcout << *(strvec[idx]) << std::endl; );
 //          rstrvec.push_back(*(strvec[idx])) ; // Too inefficient => Deleted.
 	      rstrvec[idx] = *(strvec[idx]);
         }else if(updated_vec[idx] == ORIGINAL){
 //          rstrvec.push_back(*(strvec_ori[idx])) ; // Too inefficient => Deleted.
 		  if(strvec_ori[idx] == NULL){
-            printf("%d : (ORIGINAL) Address: %p ", idx, strvec[idx] );
+            IF_DEBUG( printf("%d : (ORIGINAL) Address: %p ", idx, strvec[idx] ); );
 		    // Nothing to be assigned. The default element value of StringVector is ""
 		  }else{
-            printf("%d : (ORIGINAL) Address: %p , Value: ", idx, strvec[idx]); Rcpp::Rcout << *(strvec[idx]) << std::endl;
+            IF_DEBUG( printf("%d : (ORIGINAL) Address: %p , Value: ", idx, strvec[idx]); Rcpp::Rcout << *(strvec[idx]) << std::endl; );
 			rstrvec[idx] = *(strvec_ori[idx]);
 		  }
         }else{
-            Rcpp::Rcout << "ERROR: type_vec should have UPDATED or ORIGINAL. TYPE ID: " << updated_vec[idx] << std::endl;
+            IF_DEBUG( Rcpp::Rcout << "ERROR: type_vec should have UPDATED or ORIGINAL. TYPE ID: " << updated_vec[idx] << std::endl; );
           }
       }
       new_df.push_back(rstrvec);

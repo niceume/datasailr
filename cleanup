@@ -13,17 +13,18 @@ rm -f examples/.RData examples/.Rhistory
 
 rm -f src/*.o
 rm -f src/*.so
+rm -f src/symbols.rds
 
-make --directory src/onigmo distclean
-rm -fR src/onigmo/build/lib/*.a
-rm -fR src/onigmo/build/lib/*.la
-rm -fR src/onigmo/enc/*.lo
-rm -fR src/onigmo/enc/*.o
-rm -fR src/onigmo/sample/*.lo
-rm -fR src/onigmo/sample/*.o
-rm -fR src/onigmo/*.la
-rm -fR src/onigmo/*.lo
-rm -fR src/onigmo/*.o
+make --directory src/Onigmo distclean
+rm -fR src/Onigmo/autom4te.cache/
+rm -fR src/Onigmo/build/
+rm -fR src/Onigmo/enc/*.lo
+rm -fR src/Onigmo/enc/*.o
+rm -fR src/Onigmo/sample/*.lo
+rm -fR src/Onigmo/sample/*.o
+rm -fR src/Onigmo/*.la
+rm -fR src/Onigmo/*.lo
+rm -fR src/Onigmo/*.o
 
 
 make --directory src/libsailr clean
@@ -31,4 +32,6 @@ make --directory src/libsailr clean
 
 rm -f src/Makevars
 
+# Generate RcppExports.cpp/.R
+sh bin/compileAttr.sh
 

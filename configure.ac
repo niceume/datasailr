@@ -1,12 +1,15 @@
 # autoconf setting 
 
 AC_PREREQ([2.69])
-AC_INIT([dataSailr], 0.1.0, toshi@niceume.com)
-AC_CONFIG_SRCDIR([src/RcppExports.cpp])
+AC_INIT([datasailr], 0.8.0, toshi@niceume.com)
+AC_CONFIG_SRCDIR([src/Makevars.in])
 
 AC_LANG(C++)
 AC_REQUIRE_CPP
 AC_PROG_CXX
+
+# compile Attributes for rcpp
+sh ./bin/compileAttr.sh
 
 # set default values
 

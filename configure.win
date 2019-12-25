@@ -1,0 +1,3 @@
+# compile Attributes for rcpp
+sh ./bin/compileAttr.sh
+

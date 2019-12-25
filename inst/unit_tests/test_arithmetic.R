@@ -11,7 +11,7 @@ exp2 = 2 ** 5
 exp3 = 2.2 ^ 3 
 "
 iris_result = iris
-  iris_result = dataSailr::sail(iris, code)
+  iris_result = datasailr::sail(iris, code)
 
   iris2 = iris;
   iris2[,"Sepal.Area"] = iris2[,"Sepal.Length"] * iris2[,"Sepal.Width"]

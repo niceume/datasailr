@@ -1,11 +1,12 @@
-Package: dataSailr
+Package: datasailr
 Type: Package
-Title: dataSailr makes it easy to manipulate data row by row, using Sailr lang.
+Title: DataSailr makes it easy to manipulate data row by row, using Sailr lang.
 Version: 0.8
-Date: 2018-11-15
+Date: 2019-12-25
 Author: Toshi Umehara
+Authors@R: person("Toshihiro", "Umehara", email = "toshi@niceume.com",  role = c("cre", "aut"))
 Maintainer: Toshi Umehara <toshi@niceume.com>
-Description: dataSailr enables row by row data manipulation. You can write data manipulation code in Sailr lang which is specially intended for the data manipulation. The package uses libsailr (C/C++ library) for its sailr code parsing and its calculation.
+Description: DataSailr enables row by row data manipulation. You can write data manipulation code in Sailr lang which is specially intended for the data manipulation. The package uses libsailr (C/C++ library) for its Sailr code parsing and its execution.
 License: GPL (>= 3) 
 Imports: Rcpp (>= 0.12.18)
 Suggests: RUnit
