@@ -446,7 +446,7 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
     }
   }
   new_df.attr("names") = name_vec;
-  Rcpp::DataFrame new_df_out(new_df);  // This step is required to output proper data.frame.
+  Rcpp::DataFrame new_df_out = Rcpp::DataFrame::create(new_df , _["stringsAsFactors"] = false );  // This step is required to output proper data.frame.
   return new_df_out;
 }
 

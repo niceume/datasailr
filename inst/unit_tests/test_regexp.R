@@ -41,15 +41,13 @@ if(name =~ germany){
 }
 
 description = name + " is " +  power + " " + country + " made car."
-
-print("The current row process finished.\n");
 '
 
   mtcars_result = datasailr::sail(mtcars, code)
   mtcars2 = mtcars
 
   mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )
-  country_list = c( rep("Japan", 3), rep("USA", 2), "Austoralia", "France", rep("Germany", 6), rep("USA", 3),  "Italy", rep("Japan",3), rep("USA",4), "Italy", "Germany", "UK", "USA", rep("Italy",2), "Germany")
+  country_list = c( rep("Japan", 3), rep("USA", 2), "Austoralia", "France", rep("Germany", 7), rep("USA", 3),  "Italy", rep("Japan",3), rep("USA",4), "Italy", "Germany", "UK", "USA", rep("Italy",2), "Germany")
   mtcars2$country = country_list
   mtcars2$description = paste0(mtcars2$name , " is ", mtcars2$power, " ", mtcars2$country, " made car.")
 

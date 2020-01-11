@@ -14,14 +14,15 @@ if( hp > 145 ){
 
 efficient = ""
 if( mpg > 20){
-  efficient = "effcient"
+  efficient = "efficient"
 }else if( 20 >= mpg && mpg > 0 ){
-  efficient = "ineffcient"
+  efficient = "inefficient"
 }else{
   print("mpg variable has missing value")
 }
 
-description = name + " is " + power + " " + efficient + " car with " +  num_to_str(cyl) + " cylinders."
+print(cyl)
+description = name + " is " + power + " " + efficient + " car"
   '
 
   mtcars_result = datasailr::sail(mtcars, code)
@@ -29,10 +30,10 @@ description = name + " is " + power + " " + efficient + " car with " +  num_to_s
 
   mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )
   mtcars2$efficient = ifelse( mtcars2$mpg > 20 , "efficient" , "inefficient" )
-  mtcars2$description = paste(mtcars2$name, "is", mtcars2$power, mtcars2$efficient, "car with", mtcars2$cyl, "cylinders.")
+  mtcars2$description = paste(mtcars2$name, "is", mtcars2$power, mtcars2$efficient, "car" )
   
-  checkEquals( mtcars_result[,"power"] , mtcars2[,"power"])
-  checkEquals( mtcars_result[,"efficient"] , mtcars2[,"efficient"])
-  checkEquals( mtcars_result[,"description"] , mtcars2[,"description"])
+  checkEquals( mtcars_result[,"power"] , mtcars2[,"power"] )
+  checkEquals( mtcars_result[,"efficient"] ,   mtcars2[,"efficient"] )
+  checkEquals( mtcars_result[,"description"] , mtcars2[,"description"] )
 }
 

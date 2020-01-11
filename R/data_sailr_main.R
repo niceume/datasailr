@@ -1,17 +1,29 @@
-sail = function( df , code , fullData = FALSE){
+sail = function( df , code , fullData = FALSE ,  rowname = "_rowname_" ){
 	colnames_df = colnames(df)
-	if( "_rowname_" %in% colnames_df){
-		# Need to add _rowname_ column
+	rowname_added_temporarily = F
+
+	if( rowname == F ){
 	}else{
-		df[,"_rowname_"] = row.names(df)
+		rowname_within_ori_df = ( rowname %in% colnames_df )
+		if( ! rowname_within_ori_df ){
+			df[,rowname] = row.names(df)
+			rowname_added_temporarily = T
+		}else{
+			# need not be added
+		}
 	}
 
-	result_df = data.frame( .data_sailr_cpp_execute( code, df) )
-	if(fullData == T){
-		result_df = cbind( df , result_df , stringsAsFactors = FALSE)
-	}else{
-		
+	result = .data_sailr_cpp_execute( code, df)
+	result_df = data.frame( result , stringsAsFactors = F )
+
+	if( rowname_added_temporarily  ){
+		df = df[ , !( colnames(df) %in%  rowname )]
 	}
+
+	if(fullData == T){
+		result_df = cbind( df , result_df )
+	}
+
 	return(result_df)
 }
 

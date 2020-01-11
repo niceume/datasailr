@@ -1,7 +1,7 @@
 Package: datasailr
 Type: Package
-Title: DataSailr makes it easy to manipulate data row by row, using Sailr lang.
-Version: 0.8
+Title: DataSailr Makes it Easy to Manipulate Data Row by Row, Using Sailr Lang.
+Version: 0.8.0
 Date: 2019-12-25
 Author: Toshi Umehara
 Authors@R: person("Toshihiro", "Umehara", email = "toshi@niceume.com",  role = c("cre", "aut"))

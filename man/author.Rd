@@ -7,7 +7,7 @@
   datasailr::author() shows author information of this package.
 }
 \usage{
-  author( )
+  author()
 }
 \arguments{
   \item{}{}

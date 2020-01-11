@@ -15,6 +15,7 @@
 
 /src/RcppExports.cpp
 /R/RcppExports.R
+/src/symbols.rds
 
 # C/C++ related object files
 *.o
@@ -48,6 +49,7 @@ core
 
 # Session Data files
 *.RData
+!/data/*.RData
 
 # User-specific files
 *.Ruserdata
