@@ -16,19 +16,26 @@ rm -f src/*.so
 rm -f src/symbols.rds
 
 make --directory src/Onigmo distclean
+rm -fR src/Onigmo/*.la
+rm -fR src/Onigmo/*.lo
+rm -fR src/Onigmo/*.o
+rm -fR src/Onigmo/.git
 rm -fR src/Onigmo/autom4te.cache/
 rm -fR src/Onigmo/build/
 rm -fR src/Onigmo/enc/*.lo
 rm -fR src/Onigmo/enc/*.o
 rm -fR src/Onigmo/sample/*.lo
 rm -fR src/Onigmo/sample/*.o
-rm -fR src/Onigmo/*.la
-rm -fR src/Onigmo/*.lo
-rm -fR src/Onigmo/*.o
+rm -fR src/Onigmo/.editorconfig
+rm -fR src/Onigmo/.gitignore
+rm -fR src/Onigmo/.travis.yml
+rm -fR src/Onigmo/m4/.gitkeep
+rm -fR src/Onigmo/tool/.gitignore
 
-
+rm -fR src/libsailr/dev_env
+rm -fR src/libsailr/.git
+rm -f src/libsailr/.gitignore
 make --directory src/libsailr clean
-# make --directory src/libsailr/dev_env clean
 
 rm -f src/Makevars
 

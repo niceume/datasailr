@@ -5,7 +5,12 @@
 * First commit
 * Thanksgiving Day Release (11/28/2019)
 * Christmas Update (12/25/2019) to release to the public
-* Updating to submit to CRAN (01/10/2019)
+* Updating to submit to CRAN (01/11/2020)
+    + The variables updated by this package have character types, not factors.
+    + New argument, rowname, is added to sail() function.
+    + libsailr is updated.
+* Change following the libsailr API update. (01/19/2020)
+
 
 ## Birth 
 

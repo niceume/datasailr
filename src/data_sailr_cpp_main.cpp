@@ -854,20 +854,20 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
   IF_DEBUG( printf("ptr_table is initialized (table's pointer is %p ) \n", table); );
 
 	// Initializing parser_state, which stores TreeNode*.
-	IF_DEBUG( Rcpp::Rcout << "Constructing parser tree."  << std::endl ; );
+	IF_DEBUG( Rcpp::Rcout << "Constructing parse tree."  << std::endl ; );
 	parser_state_object* ps = sailr_new_parser_state ((char*)"Code from R", table);
-	sailr_construct_parser( code.c_str(), ps );  // Now ps now holds AST tree and ptr_table!!
+	sailr_run_parser( code.c_str(), ps );  // Now ps now holds AST tree and ptr_table!!
 
-	// Show parser tree
-	IF_DEBUG( Rcpp::Rcout << "Show parser tree"  << std::endl ; );
+	// Show parse tree
+	IF_DEBUG( Rcpp::Rcout << "Show parse tree"  << std::endl ; );
 	IF_DEBUG( sailr_tree_dump( ps ); std::cout << std::flush; );
 
-	// Show pointer table after constructing parser tree
+	// Show pointer table after constructing parse tree
 	IF_DEBUG( Rcpp::Rcout << "Show pointer table. (At this point, anonymous STRING and REGEXP's should be already added.)" << std::endl; );
 	IF_DEBUG( sailr_ptr_table_show_all(&table);  std::cout << std::flush; );
 
 	// Show variables on source code
-	IF_DEBUG( Rcpp::Rcout << "Variable names on RHS and LHS were collected during constructing parser tree." << std::endl; );
+	IF_DEBUG( Rcpp::Rcout << "Variable names on RHS and LHS were collected during constructing parse tree." << std::endl; );
 	IF_DEBUG( Rcpp::Rcout << "Variable names that appear in source code ( = LHS + RHS):" << std::endl; );
 	std::vector<std::string> vars;
 	char** var_array = sailr_varnames(ps);
