@@ -173,7 +173,7 @@ R can handle vectors, list, S4 class objects, and so on. Among those R objects, 
 
 
 | Column of R data.frame |  DataSailr    | 
--------------------------|---------------|--
+-------------------------|-----------------
 | Integer Vector         | Int           |
 | Double (Real) Vector   | Double        | 
 | Character Vector       | String        |
