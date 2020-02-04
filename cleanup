@@ -35,7 +35,7 @@ rm -fR src/Onigmo/tool/.gitignore
 rm -fR src/libsailr/dev_env
 rm -fR src/libsailr/.git
 rm -f src/libsailr/.gitignore
-make --directory src/libsailr clean
+make --directory src/libsailr distclean
 
 rm -f src/Makevars
 

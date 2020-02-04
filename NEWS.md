@@ -10,6 +10,7 @@
     + New argument, rowname, is added to sail() function.
     + libsailr is updated.
 * Change following the libsailr API update. (01/19/2020)
+* cleanup script is updated (2/6/2020)
 
 
 ## Birth 
