@@ -988,7 +988,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 
 #ifdef SAILR_NULL_UPDATED
 		int null_updated_val = sailr_ptr_table_info_get_null_updated(&table);
-		int extract_str_dbl_int_bits = 0b00000111;
+		int extract_str_dbl_int_bits = (1<<0)|(1<<1)|(1<<2); // 0b00000111 can also be equivalent after C++14
 		if( null_updated_val & extract_str_dbl_int_bits){ // if ( null is updated to int, doulbe or string )
 		IF_DEBUG( Rcpp::Rcout << "Null updated" << std::endl; );
 #endif

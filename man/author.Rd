@@ -9,7 +9,4 @@
 \usage{
   author()
 }
-\arguments{
-  \item{}{}
-}
 
