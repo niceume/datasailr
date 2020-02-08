@@ -12,6 +12,7 @@
 * Change following the libsailr API update. (01/19/2020)
 * cleanup script is updated (2/4/2020)
 * Resolve warnings for submitting CRAN (2/5/2020)
+* Resolve windows compilation failures. (avoid autotools dependency during installation) (2/8/2020)
 
 
 ## Birth 
