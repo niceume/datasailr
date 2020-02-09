@@ -5,9 +5,12 @@ CXX_STD=CXX11
 CXX11STD = -std=c++11   
 PKG_CXXFLAGS=-Ilibsailr  # CPP means c preprocessor, CXX means cpp compiler.
 
-ifneq (,$(findstring Darwin,$(shell uname)))
+UNAME=$(shell uname)
+ifeq (,$(findstring Darwin,$(UNAME))$(findstring darwin,$(UNAME)))
+  # Not Darwin
   PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -l:libonigmo.a 
 else
+  # Darwin
   PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -lonigmo 
 endif
 
