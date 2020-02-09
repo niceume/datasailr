@@ -4,10 +4,17 @@
 CXX_STD=CXX11
 CXX11STD = -std=c++11   
 PKG_CXXFLAGS=-Ilibsailr  # CPP means c preprocessor, CXX means cpp compiler.
-PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -l:libonigmo.a 
+
+ifneq (,$(findstring Darwin,$(shell uname)))
+  PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -l:libonigmo.a 
+else
+  PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -lonigmo 
+endif
+
 # Note: -lxxx looks up for libraries in an order of libxxx.so and libxxx.a
 # Note: -l:libyyy.a directly looks up for the library with the filename of libyyy.a
 # https://stackoverflow.com/questions/6578484/telling-gcc-directly-to-link-a-library-statically
+# clang (mainly used on Darwin OS) does not support -l:<filename> syntax, so at now -l<libname> is used.
 
 
 # compile self-contained subdirectory

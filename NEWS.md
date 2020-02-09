@@ -13,6 +13,7 @@
 * cleanup script is updated (2/4/2020)
 * Resolve warnings for submitting CRAN (2/5/2020)
 * Resolve windows compilation failures. (avoid autotools dependency during installation) (2/8/2020)
+* configure.ac updates to cope with autotools nonexistent system. (2/9/2020)
 
 
 ## Birth 

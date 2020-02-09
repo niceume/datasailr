@@ -73,6 +73,12 @@ AS_IF( [test "$which_onigmo" = "USER"],
   if test -f "${current_path}/src/Onigmo/autogen.sh" ; then
 	eval "cd ${current_path}/src/Onigmo/; ./autogen.sh; cd  ${current_path};"
     echo "${current_path}/src/Onigmo/autogen.sh is successfully executed."
+  fi
+  if test -f "${current_path}/src/Onigmo/m4/lt_obsolete.m4"; then
+    echo "lt_obsolete.m4 is converted to lt~obsolete.m4"
+    eval "mv ${current_path}/src/Onigmo/m4/lt_obsolete.m4 ${current_path}/src/Onigmo/m4/lt~obsolete.m4"
+  fi
+  if test -f "${current_path}/src/Onigmo/configure" ; then
 	eval "mkdir -p ${current_path}/src/Onigmo/build"
     eval "cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CFLAGS=-fPIC; cd  ${current_path};"
     echo "${current_path}/src/Onigmo/configure is successfully executed."
@@ -82,7 +88,7 @@ AS_IF( [test "$which_onigmo" = "USER"],
     eval "rm ${current_path}/src/Onigmo/build/lib/libonigmo.so"
 	echo "dynamic library of onigmo is deleted"
   else
-    AC_MSG_ERROR("${current_path}/src/onigmo/autogen.sh is not found in this package.")
+    AC_MSG_ERROR("${current_path}/src/Onigmo/configure is not found in this package.")
   fi
   add_onigmo_include_path="ONIG_INCLUDE_DIR=${current_path}/src/Onigmo/build/include"  # Relative path from sailr directory
   add_onigmo_lib_path="-L${current_path}/src/Onigmo/build/lib"
