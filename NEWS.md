@@ -1,6 +1,10 @@
 # HISTORY
 
-## Version 0.80 (beta version)
+## Version 0.8.1
+
+* Beta release
+
+## Version 0.8
 
 * First commit
 * Thanksgiving Day Release (11/28/2019)
@@ -16,7 +20,7 @@
 * configure.ac updates to cope with autotools nonexistent system. (2/9/2020)
 
 
-## Birth 
+## Version 0.0 (Birth)
 
 * Package skeleton was created. (11/15/2018)
    + The original name was RCppCalc, which was intended only for arithmetic calculation.

@@ -14,6 +14,34 @@ DataSailr package brings intuitive and fast row by row data manipulation to R. T
 A famous R package, dplyr, has been improving the same kind of points. It enables data manipulation without thinking much about column vectors. Pipe operator, %>% in magrittr package, and dplyr functions realize intuitive data manipulation flow. The DataSailr package enables the same kind of thing with a single Sailr code. The two packages do not compete, and I intend to implement DataSailr as it also can work with dplyr.
 
 
+## How to install
+
+### Binaries
+
+Binaries are provided at "http://datasailr.io/download"
+
+Especially for windows users, it is recpmmended to install from binary package.
+
+
+### Install from source
+
+* Linux(ubuntu)
+
+For compilation, autotools, bison, flex and some other UNIX programs are required. 
+
+```
+git clone <datasailr repository>
+cd datasailr/src
+./update_3rd_party_library.sh  # This downloads Onigmo library.
+cd ..
+autoconf  # Generate configure script.
+cd ..
+
+R CMD INSTALL datasailr --preclean --no-multiarch --build
+```
+
+
+
 ## How to run Sailr script
 
 datasailr::sail() is the main function of this package. This function takes data.frame as the 1st argument and Sailr script as the 2nd argument. (Note that the 1st argument is data.frame, so you can use this package with %>% operator (in magrittr package), and combine this with functions of dplyr.)
@@ -472,97 +500,7 @@ DataSailr's special feature is that you can write multiple row level manipulatio
 
 
 
-## For developers
-
-### How to install
-
-### Binaries
-
-Binaries will be provided.
-
-* Linux (64bit)
-* Windows (64bit)
-
-```
-# Strart R interpreter
-# Linux
-install.packages('datasailr_<version>_<arch>.tar.gz', lib='<directory>',repos = NULL)
-
-# Windows
-install.packages('datasailr_<version>_<arch>.zip', lib='<directory>',repos = NULL)
-```
-
-(ref.) https://stackoverflow.com/questions/14806705/manually-downloading-and-installing-packages-in-r
-
-### Compile and install from source
-
-#### Linux(ubuntu)
-
-```
-git clone <datasailr repository>
-cd datasailr/src
-./update_3rd_party_library.sh  # This downloads Onigmo library.
-cd ..
-autoconf  # Generate configure script.
-cd ..
-
-R CMD INSTALL datasailr --preclean --no-multiarch --build
-```
-
-Done. 
-
-
-#### Windows msys2
-
-* Install msys2 and packages.
-
-Install msys2. Start mintty, and install the following packages. 
-
-```
-pacman -Syuu
-pacman -S base-devel
-pacman -S mingw-w64-x86_64-toolchain
-pacman -S zip unzip
-```
-
-* Path setting to msys2 executables.
-
-Set PATH to your Windows R.exe.
-
-```
-Set path to R.exe in your system preference.
-```
-
-
-If you want to continue to compile from command prompt, set the following environment variables. Msys2 provides Windows executables, so they can be called from Windows system.
-I do not recommend setting the following PATH in system level, b/c msys2 binaries may be called even when we do not want to call. It's better to set the following every time you use your command prompt.
-
-```
-set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\local\bin;C:\msys64\usr\bin;C:\msys64\bin;%PATH%
-set MSYSTEM=MINGW64
-bash
-```
-
-* Modify R setting
-
-When R CMD INSTALL is executed, R uses some compilers. We can specify which one to use by specifying BINPREF variable in etc/{x64,i386}/Makeconf in R. 
-
-The following pathes are set in my environment.
-
-```
-# For x64
-BINPREF = c:/msys64/mingw64/bin/
-# For i386
-BINPREF = c:/msys64/mingw32b/bin/
-```
-
-* Compile and install: follow the same procedure as Linux.
-    + Download libsair and Onigmo into src directory.
-    + autoconf
-    + R CMD INSTALL ....
-
-
-## Inside DataSailr
+## For developers & Inside DataSailr
 
 ### Architecture summary
 
