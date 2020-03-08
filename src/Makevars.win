@@ -1,6 +1,3 @@
-# The following Makefile assumes using MSYS2 on Windows.
-# MSYS2 allows UNIX like environment.
-
 CXX_STD=CXX11
 CXX11STD = -std=c++11
 
@@ -17,7 +14,7 @@ PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr -L$(ONIGMO_LIB) -l:libonigmo.a -Wl,-Bst
 # Note: -l:libyyy.a directly looks up for the library with the filename of libyyy.a
 # https://stackoverflow.com/questions/6578484/telling-gcc-directly-to-link-a-library-statically
 
-REQUIRE_AUTOTOOLS=YES
+REQUIRE_AUTOTOOLS=NO
 
 src_dir=$(strip $(shell pwd))
 
@@ -40,6 +37,8 @@ ifeq ($(REQUIRE_AUTOTOOLS), YES)
 # If user has autotools
 
 $(ONIGMO_LIB)/onigmo.a:
+	@echo $$PATH
+	@echo "Makevars.win without autotools"
 	cd $(ONIGMO_PROJ_NAME)/; ./autogen.sh; ./configure --prefix=$(src_dir)/$(ONIGMO_INSTALL); make; make install;  cd ..; 
 	rm -f $(ONIGMO_LIB)/onigmo.dll
 	rm -f $(ONIGMO_LIB)/libonigmo.dll.a
@@ -51,13 +50,13 @@ else
 # For those users like CRAN, autogen.sh should be run beforehand, and configure script should be generated.
 
 $(ONIGMO_LIB)/onigmo.a: $(ONIGMO_PROJ_NAME)/m4/lt~obsolete.m4
-	mkdir -p $(ONIGMO_INSTALL)
-	cd $(ONIGMO_PROJ_NAME) && ./configure --prefix=$(src_dir)/$(ONIGMO_INSTALL) && $(MAKE) && $(MAKE) install && cd .. 
-	rm -f $(ONIGMO_LIB)/onigmo.dll
-	rm -f $(ONIGMO_LIB)/libonigmo.dll.a
-	rm -f $(ONIGMO_LIB)/libonigmo.la
-	rm -f $(ONIGMO_LIB)/onigmo.so
-	ls -al $(ONIGMO_LIB)/
+	@echo $$PATH
+	@echo "Makevars.win without autotools"
+	mkdir -p $(ONIGMO_LIB)
+	mkdir -p $(ONIGMO_INCLUDE)
+	cd $(ONIGMO_PROJ_NAME) && $(MAKE) -f win32/Makefile.mingw
+	cp $(ONIGMO_PROJ_NAME)/build_/libonigmo.a $(ONIGMO_LIB)/
+	cp $(ONIGMO_PROJ_NAME)/onigmo.h $(ONIGMO_INCLUDE)/
 
 # lt~obsolete.m4 cannot be included for CRAN.
 

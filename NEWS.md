@@ -18,6 +18,8 @@
 * Resolve warnings for submitting CRAN (2/5/2020)
 * Resolve windows compilation failures. (avoid autotools dependency during installation) (2/8/2020)
 * configure.ac updates to cope with autotools nonexistent system. (2/9/2020)
+* Makevars.win is updated. To build onigmo, win32/Makefile.mingw is now used. 
+    + This leads to successfully build on rhub windows environment. (3/8/2020)
 
 
 ## Version 0.0 (Birth)

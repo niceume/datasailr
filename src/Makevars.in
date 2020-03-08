@@ -32,5 +32,7 @@ $(SHLIB): libsailr/libsailr.a
 
 libsailr/libsailr.a:
 	@echo "compiling libsailr engine."
+	@echo $$PATH
+	@echo "Makevars.in"
 	$(MAKE) build --directory libsailr @add_onigmo_include_path@ ## CC_USER_DEFINES="-DDEBUG"
 
