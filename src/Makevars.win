@@ -2,6 +2,7 @@ CXX_STD=CXX11
 CXX11STD = -std=c++11
 
 $(info $(R_ARCH))
+$(info $(ARCH))
 
 ONIGMO_PROJ_NAME=Onigmo
 ONIGMO_INSTALL=$(ONIGMO_PROJ_NAME)/_BUILD
@@ -15,7 +16,6 @@ PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr -L$(ONIGMO_LIB) -l:libonigmo.a -Wl,-Bst
 # https://stackoverflow.com/questions/6578484/telling-gcc-directly-to-link-a-library-statically
 
 REQUIRE_AUTOTOOLS=NO
-
 src_dir=$(strip $(shell pwd))
 
 # compile self-contained subdirectory
@@ -30,7 +30,7 @@ $(SHLIB): libsailr/libsailr.a
 
 libsailr/libsailr.a: $(ONIGMO_LIB)/onigmo.a
 	@echo "compiling libsailr engine."
-	$(MAKE) build --directory libsailr ONIG_INCLUDE_DIR=../$(ONIGMO_INCLUDE)
+	$(MAKE) build --directory libsailr ONIG_INCLUDE_DIR=../$(ONIGMO_INCLUDE) CPPC="$(CXX)" CC="$(CC)"  AR="$(AR) rvs" 
 
 
 ifeq ($(REQUIRE_AUTOTOOLS), YES)
@@ -54,8 +54,8 @@ $(ONIGMO_LIB)/onigmo.a: $(ONIGMO_PROJ_NAME)/m4/lt~obsolete.m4
 	@echo "Makevars.win without autotools"
 	mkdir -p $(ONIGMO_LIB)
 	mkdir -p $(ONIGMO_INCLUDE)
-	cd $(ONIGMO_PROJ_NAME) && $(MAKE) -f win32/Makefile.mingw
-	cp $(ONIGMO_PROJ_NAME)/build_/libonigmo.a $(ONIGMO_LIB)/
+	cd $(ONIGMO_PROJ_NAME) && $(MAKE) -f win32/Makefile.mingw ARCH="$(ARCH)" CXX="$(CXX)" CC="$(CC)" ARLIB="$(AR)" ARDLL="$(CC)" RANLIB="$(RANLIB)" RC="$(RESCOMP)"
+	cp $(ONIGMO_PROJ_NAME)/build_$(ARCH)/libonigmo.a $(ONIGMO_LIB)/
 	cp $(ONIGMO_PROJ_NAME)/onigmo.h $(ONIGMO_INCLUDE)/
 
 # lt~obsolete.m4 cannot be included for CRAN.

@@ -154,7 +154,7 @@ vec_list_add_null_vec ( VEC_LIST* vec_list, char* var_name , int size)
 
 void
 vec_list_free( VEC_LIST* vl){
-	char* var_name;
+	IF_DEBUG( char* var_name );
 	void* column_vec1;
 	void* column_vec2;
 	void* column_vec3;
@@ -167,7 +167,7 @@ vec_list_free( VEC_LIST* vl){
 	
 	
 	for( auto it = vl->begin(); it!=vl->end() ; ++it){
-		var_name = std::get<0>(*it);
+		IF_DEBUG( var_name = std::get<0>(*it); );
 		switch( std::get<2>(*it)){
 		case INTSXP:
 			IF_DEBUG( Rcpp::Rcout << "Free INTSXP element (" << var_name << ")"  << std::endl; );
@@ -322,6 +322,7 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
   LogicalVector dbl_pos;
   LogicalVector nan_pos;
 
+  int index;
   unsigned int idx;
   
   for(auto it = vl->begin(); it != vl->end(); ++it ){
@@ -356,13 +357,13 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
         new_df.push_back(ifelse(!dbl_pos, intvec, NA_INTEGER));
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else{
-        for( idx = 0 ; idx < typevec.size() ; ++idx ){
-          if(typevec(idx) == INTNUM){
-            if( intvec(idx) == NA_INTEGER)
-              dblvec(idx) = NA_REAL;
+        for( index = 0 ; index < typevec.size() ; ++index ){
+          if(typevec(index) == INTNUM){
+            if( intvec(index) == NA_INTEGER)
+              dblvec(index) = NA_REAL;
             else
-              dblvec(idx) = (double) intvec(idx);
-          }else if(typevec(idx) == DBLNUM){
+              dblvec(index) = (double) intvec(index);
+          }else if(typevec(index) == DBLNUM){
               // dblvec is used.
           }else{
             Rcpp::Rcout << "ERROR: type_vec should have INTNUM or DBLNUM" << std::endl;
@@ -390,13 +391,13 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
         new_df.push_back(ifelse(!dbl_pos, intvec, NA_INTEGER));
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else{
-        for( idx = 0 ; idx < typevec.size() ; ++idx ){
-          if(typevec(idx) == INTNUM){
-            if( intvec(idx) == NA_INTEGER)
-              dblvec(idx) = intvec(idx);
+        for( index = 0 ; index < typevec.size() ; ++index ){
+          if(typevec(index) == INTNUM){
+            if( intvec(index) == NA_INTEGER)
+              dblvec(index) = intvec(index);
             else
-              dblvec(idx) = (double) intvec(idx);
-          }else if(typevec(idx) == DBLNUM){
+              dblvec(index) = (double) intvec(index);
+          }else if(typevec(index) == DBLNUM){
             // dblvec is used.
           }else{
             Rcpp::Rcout << "ERROR: type_vec should have INTNUM or DBLNUM" << std::endl;

@@ -14,16 +14,5 @@
 #   +
 # 
 
-dir="."
+Rscript -e 'library(Rcpp); compileAttributes(".")'
 
-if [ $# -eq 1 ]; then
-    dir=${1}
-    if [ ! -d "${dir}" ]; then
-        echo "Directory ${dir} does not exist. Exiting"
-        exit 1
-    fi
-fi          
-
-cd ${dir} && \
-    Rscript -e 'library(Rcpp); compileAttributes(".")' && \
-    cd - > /dev/null

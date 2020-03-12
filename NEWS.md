@@ -1,5 +1,17 @@
 # HISTORY
 
+## Version 0.8.2
+
+* CRAN release candidate (Mar. 12 2020)
+    + Biarch: true in DESCRIPTION.
+        + In windows environment, if you have configure.win file, cross-compilation is not executed. This Biarch option solves it.
+        + (ref) https://community.rstudio.com/t/configure-win-and-cran-submission/24684/4?fbclid=IwAR3RIMNzABwyBicz6hSPG6m1hmurtEzLGPjgMTFsjXJVkHEqBdW6wYFPd-Q
+    + Package C++ main file (data_sailr_cpp_main.cpp) is updated for minor warnings.
+        + Rcpp vectors' size() function returns singed int. Chage my code to be compatible with it.
+    + Pass R defined makefile variables to Onigmo and libsailr makefiles
+        + Makevars.win is updated.
+
+
 ## Version 0.8.1
 
 * Beta release
