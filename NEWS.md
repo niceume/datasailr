@@ -11,6 +11,13 @@
     + Pass R defined makefile variables to Onigmo and libsailr makefiles
         + Makevars.win is updated.
 
+* Minor updates (Mar. 15 2020)
+    + Typos are corrected in README.md
+    + Also, the following files are updated to resolve CRAN submission problems.
+    + library() functions are removed.
+        + These are used especially in test functions.
+    + Title and description in DESCRIPTION are updated.
+
 
 ## Version 0.8.1
 

@@ -20,7 +20,7 @@ A famous R package, dplyr, has been improving the same kind of points. It enable
 
 Binaries are provided at "http://datasailr.io/download"
 
-Especially for windows users, it is recpmmended to install from binary package.
+Especially for windows users, it is recommended to install from binary package.
 
 
 ### Install from source
@@ -150,7 +150,7 @@ Sailr is specially intended for use of data manipulation. From the programming l
 (*) SAS is the world's largest privately held software company. SAS provides SAS softwares which are used by professional data analysis users.
 
 
-### [IMPORTANT] Variables & Assigment operation [MUST READ]
+### [IMPORTANT] Variables & Assignment operation [MUST READ]
 
 * Variables in Sailr and variables in statistics
 
@@ -185,7 +185,7 @@ Sailr can deal with the following types, and so does DataSailr.
     + At now, there is no such way to dynamically generate regular expression object.
 
 
-R can handle vectors, list, S4 class objects, and so on. Among those R objects, dataframe usually consists of only vectors. The following list shows which data types are supported by DataSailr. Supporting vectors of numbers and strings is enogh in most of the cases of data analysis. 
+R can handle vectors, list, S4 class objects, and so on. Among those R objects, dataframe usually consists of only vectors. The following list shows which data types are supported by DataSailr. Supporting vectors of numbers and strings is enough in most of the cases of data analysis. 
 
 * logical vector : DataSailr imports TRUE as 1, and FALSE as 0.
 * integer vector : DataSailr deals with it as integer.
@@ -314,9 +314,9 @@ For string, empty string ("") represents missing string.
 
 #### Missing value (-nan) for if-condition
 
-Note that in vanilla R, calculation with missing value returns missing value, and missing values act like TRUE in logical vecotr. In vanilla R, filtering of vectors and dataframes is done using logical vectors. If missing values are treated like TRUE, unintended elements or rows that have missing values are extracted. For example, you are calculating BMI (body mass index) from body weight and height. One person has a missing for body weight. His/her BMI will be calculated as missing value. You would like to categorize this person as "unknown BMI" category, then missingness should be chekced first and these people should be categorized first. Otherwise, missing values in logical vector works like TRUE, so these people are categorized into some BMI categories, such as "high BMI" or "low BMI".
+Note that in vanilla R, calculation with missing value returns missing value, and missing values act like TRUE in logical vector. In vanilla R, filtering of vectors and dataframes is done using logical vectors. If missing values are treated like TRUE, unintended elements or rows that have missing values are extracted. For example, you are calculating BMI (body mass index) from body weight and height. One person has a missing for body weight. His/her BMI will be calculated as missing value. You would like to categorize this person as "unknown BMI" category, then missingness should be checked first and these people should be categorized first. Otherwise, missing values in logical vector works like TRUE, so these people are categorized into some BMI categories, such as "high BMI" or "low BMI".
 
-In DataSailr, on the ohter hand, comparison operators with missing values return false except that missing is compared with missing.
+In DataSailr, on the other hand, comparison operators with missing values return false except that missing is compared with missing.
 
 ```
 library(datasailr)
@@ -357,7 +357,7 @@ new_df
 
 Infinite numbers are also supported. Internally this is implemented as Inf in C. The behavior is same as C.
 
-(ref.) NAN and inifinity in C Standard ( https://www.gnu.org/software/libc/manual/html_node/Infinity-and-NaN.html )
+(ref.) NAN and infinity in C Standard ( https://www.gnu.org/software/libc/manual/html_node/Infinity-and-NaN.html )
 (ref.) This support seems to require at least C99. ( https://stackoverflow.com/questions/6235847/how-to-generate-nan-infinity-and-infinity-in-ansi-c )
 
 ```
@@ -435,9 +435,9 @@ str_subset(8,9)    // 世界
 
 Currently, the regular expression objects are not generated during run time but only in parsing phase. In other words, regular expressions can be generated only in regular expression literal. Regular expression syntax is re/pattern/ , which start with re/ and end with /. 
 
-The regular expression engine used internally is Onigmo ( https://github.com/k-takata/Onigmo ). The source code must be writtein in UTF8, because regular expression object is programmed to assume UTF8 for its input (in libsailr).
+The regular expression engine used internally is Onigmo ( https://github.com/k-takata/Onigmo ). The source code must be written in UTF8, because regular expression object is programmed to assume UTF8 for its input (in libsailr).
 
-As the following code shows, backreference (outside of the pattern) cam be used via regexp_matched() function.
+As the following code shows, backreference (outside of the pattern) can be used via regexp_matched() function.
 
 ```
 germany = re/(^Merc|^Porsche|^Volvo)/
@@ -470,7 +470,7 @@ date_format( unix_date, str_format )  // This format should follow C++'s std::ch
 List of major differences between DataSailr and DATA Step in SAS software.
 
 1. DataSailr if-else statements use curly brackets { }. SAS software uses if-then-else style.
-2. DataSailr if-else curly brackets can hold multiple statemnts. SAS software needs to use do statement for multiple statements. i.e. if-then-do-end style. 
+2. DataSailr if-else curly brackets can hold multiple statements. SAS software needs to use do statement for multiple statements. i.e. if-then-do-end style. 
 3. OUTPUT statement is not supported in DataSailr yet.
 4. RETAIN statement is not supported and there is no plan to support it in the future.
 5. The default character encoding of DataSailr is UTF8. 
@@ -495,7 +495,7 @@ DataSailr's special feature is that you can write multiple row level manipulatio
 | Keep some rows         | (Not implemented yet)          | filter()             |
 | Summarize columns      | No use for this purpose        | summarize()          |
 | Sort rows              | No use for this purpose        | arrange()            |
-| Regular expression     | Builtin                        | Partially available with another R package |
+| Regular expression     | Built-in                       | Partially available with another R package |
 | Available functions    | Can call only Sailr functions  | Can call R functions |
 
 

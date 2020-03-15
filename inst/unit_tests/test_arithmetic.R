@@ -23,11 +23,11 @@ iris_result = iris
   iris2$exp2 = rep(2 ^ 5, n_rows)
   iris2$exp3 = rep(2.2 ^ 3, n_rows) 
 
-  checkEqualsNumeric( iris_result[,"Sepal.Area"] , iris2[,"Sepal.Area"])
-  checkEqualsNumeric( iris_result[,"Petal.Area"] , iris2[,"Petal.Area"])
-  checkEqualsNumeric( iris_result[,"Sepal.Petal.Ratio"] , iris2[,"Sepal.Petal.Ratio"])
-  checkEqualsNumeric( iris_result[,"exp"] , iris2[,"exp"])
-  checkEqualsNumeric( iris_result[,"exp2"] , iris2[,"exp2"])
-  checkEqualsNumeric( iris_result[,"exp3"] , iris2[,"exp3"])
+  RUnit::checkEqualsNumeric( iris_result[,"Sepal.Area"] , iris2[,"Sepal.Area"])
+  RUnit::checkEqualsNumeric( iris_result[,"Petal.Area"] , iris2[,"Petal.Area"])
+  RUnit::checkEqualsNumeric( iris_result[,"Sepal.Petal.Ratio"] , iris2[,"Sepal.Petal.Ratio"])
+  RUnit::checkEqualsNumeric( iris_result[,"exp"] , iris2[,"exp"])
+  RUnit::checkEqualsNumeric( iris_result[,"exp2"] , iris2[,"exp2"])
+  RUnit::checkEqualsNumeric( iris_result[,"exp3"] , iris2[,"exp3"])
 }
 

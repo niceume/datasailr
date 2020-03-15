@@ -51,8 +51,8 @@ description = name + " is " +  power + " " + country + " made car."
   mtcars2$country = country_list
   mtcars2$description = paste0(mtcars2$name , " is ", mtcars2$power, " ", mtcars2$country, " made car.")
 
-  checkEquals( mtcars_result[,"power"] , mtcars2[,"power"])
-  checkEquals( mtcars_result[,"country"] , mtcars2[,"country"])
-  checkEquals( mtcars_result[,"description"] , mtcars2[,"description"])
+  RUnit::checkEquals( mtcars_result[,"power"] , mtcars2[,"power"])
+  RUnit::checkEquals( mtcars_result[,"country"] , mtcars2[,"country"])
+  RUnit::checkEquals( mtcars_result[,"description"] , mtcars2[,"description"])
 
 }

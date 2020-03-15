@@ -32,8 +32,8 @@ description = name + " is " + power + " " + efficient + " car"
   mtcars2$efficient = ifelse( mtcars2$mpg > 20 , "efficient" , "inefficient" )
   mtcars2$description = paste(mtcars2$name, "is", mtcars2$power, mtcars2$efficient, "car" )
   
-  checkEquals( mtcars_result[,"power"] , mtcars2[,"power"] )
-  checkEquals( mtcars_result[,"efficient"] ,   mtcars2[,"efficient"] )
-  checkEquals( mtcars_result[,"description"] , mtcars2[,"description"] )
+  RUnit::checkEquals( mtcars_result[,"power"] , mtcars2[,"power"] )
+  RUnit::checkEquals( mtcars_result[,"efficient"] ,   mtcars2[,"efficient"] )
+  RUnit::checkEquals( mtcars_result[,"description"] , mtcars2[,"description"] )
 }
 
