@@ -40,5 +40,5 @@ make --directory src/libsailr distclean
 rm -f src/Makevars
 
 # Generate RcppExports.cpp/.R
-sh bin/compileAttr.sh
+sh exec/compileAttr.sh
 

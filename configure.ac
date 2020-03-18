@@ -9,7 +9,7 @@ AC_REQUIRE_CPP
 AC_PROG_CXX
 
 # compile Attributes for rcpp
-sh ./bin/compileAttr.sh
+sh ./exec/compileAttr.sh
 
 # set default values
 

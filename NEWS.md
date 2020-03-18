@@ -22,6 +22,7 @@
     + DESCRIPTION file is updated
     + printf() functions are enclosed within IF_DEBUG() macro in src/data_sailr_cpp_main.cpp
         + Including stdout/stderr related functions is not allowed in CRAN package.
+    + bin directory is renamed to exec
 
 
 ## Version 0.8.1
