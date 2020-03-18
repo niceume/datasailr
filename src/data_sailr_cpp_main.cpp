@@ -585,9 +585,12 @@ update_vec_elem_with_new_type(VEC_LIST* vec_list, char* nil_var_name, char new_t
     new_vec_info[2] = NULL;
     return new_vec_info ;
   } else{
-  	if(new_type == 'n'){ printf("WARNING: The variable, %s , on ptr_table does not seem to be updated.\n", nil_var_name );
-    } else if(new_type == 'x'){ printf("ERROR: The variable, %s , on ptr_table is updated to unknown type. TYPE ID: %d \n", nil_var_name, new_type );
-    } else { printf("ERROR: The variable, %s , on ptr_table is updated to unknown type.  TYPE ID: %d \n", nil_var_name, new_type );
+  	if(new_type == 'n'){ 
+        IF_DEBUG( printf("WARNING: The variable, %s , on ptr_table does not seem to be updated.\n", nil_var_name ); );
+    } else if(new_type == 'x'){ 
+        IF_DEBUG( printf("ERROR: The variable, %s , on ptr_table is updated to unknown type. TYPE ID: %d \n", nil_var_name, new_type ); );
+    } else { 
+        IF_DEBUG( printf("ERROR: The variable, %s , on ptr_table is updated to unknown type.  TYPE ID: %d \n", nil_var_name, new_type ); );
 	}
     new_vec_info[0] = NULL;
     new_vec_info[1] = NULL;

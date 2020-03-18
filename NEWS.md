@@ -18,6 +18,11 @@
         + These are used especially in test functions.
     + Title and description in DESCRIPTION are updated.
 
+* Minor updates (Mar. 18 2020)
+    + DESCRIPTION file is updated
+    + printf() functions are enclosed within IF_DEBUG() macro in src/data_sailr_cpp_main.cpp
+        + Including stdout/stderr related functions is not allowed in CRAN package.
+
 
 ## Version 0.8.1
 
