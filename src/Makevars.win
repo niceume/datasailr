@@ -1,5 +1,4 @@
 CXX_STD=CXX11
-CXX11STD = -std=c++11
 
 $(info $(R_ARCH))
 $(info $(ARCH))

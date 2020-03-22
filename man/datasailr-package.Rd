@@ -26,8 +26,31 @@ Maintainer: Toshi Umehara <toshi@niceume.com>
   http://libsailr.github.io
 }
 \examples{
-  \dontrun{
-     library(datasailr)
+  library(datasailr)
+  data(mtcars)
+
+  code_example = 'powerful = .
+  if( 145 >= hp && hp > 0 ){
+    powerful = 0
+  }else if( hp > 145 ){
+    powerful = 1
+  }else{
+    powerful = 2
   }
+
+  germany = re/(^Merc|^Porsche|^Volvo)/
+  japan = re/(^Mazda|^Honda|^Toyota)/
+
+  if ( _rowname_ =~  germany ) { 
+      country = "Germany" 
+  }else if( _rowname_ =~ japan ){
+      country = "Japan"
+  }else {
+      country = "Other"
+  }
+  company = rexp_matched(1)
+'
+
+datasailr::sail(mtcars, code_example, fullData = T)
 }
 

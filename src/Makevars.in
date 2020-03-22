@@ -2,7 +2,6 @@
 # https://stackoverflow.com/questions/43597632/understanding-the-contents-of-the-makevars-file-in-r-macros-variables-r-ma
 
 CXX_STD=CXX11
-CXX11STD = -std=c++11   
 PKG_CXXFLAGS=-Ilibsailr  # CPP means c preprocessor, CXX means cpp compiler.
 
 UNAME=$(shell uname)

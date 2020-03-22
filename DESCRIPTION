@@ -12,3 +12,4 @@ Imports: Rcpp (>= 0.12.18)
 Suggests: RUnit
 LinkingTo: Rcpp
 SystemRequirements: GNU make
+SystemRequirements: C++11
