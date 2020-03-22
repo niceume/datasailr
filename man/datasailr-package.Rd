@@ -51,6 +51,6 @@ Maintainer: Toshi Umehara <toshi@niceume.com>
   company = rexp_matched(1)
 '
 
-datasailr::sail(mtcars, code_example, fullData = T)
+datasailr::sail(mtcars, code_example, fullData = TRUE)
 }
 

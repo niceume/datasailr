@@ -6,10 +6,10 @@ Date: 2020-03-18
 Maintainer: Toshihiro Umehara <toshi@niceume.com>
 Authors@R: person("Toshihiro", "Umehara", email="toshi@niceume.com", role=c("aut", "cre"))
 Description: A fast row by row data processing tool. You can write data manipulation code in 'Sailr' language which is specially intended for the data manipulation. The package uses 'libsailr' (C/C++ library) for its 'Sailr' code parsing and its execution.
+Encoding: UTF-8
 License: GPL (>= 3) 
 Biarch: true
 Imports: Rcpp (>= 0.12.18)
 Suggests: RUnit
 LinkingTo: Rcpp
-SystemRequirements: GNU make
-SystemRequirements: C++11
+SystemRequirements: GNU make, C++11

@@ -24,6 +24,10 @@
         + Including stdout/stderr related functions is not allowed in CRAN package.
     + bin directory is renamed to exec
 
+* Minor updates (Mar. 22 2020)
+    + DESCRIPTION file is updated. (Encoding and SystemRequirements)
+    + Example script is added to package document.
+
 
 ## Version 0.8.1
 
