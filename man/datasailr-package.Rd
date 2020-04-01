@@ -4,26 +4,22 @@
 \alias{datasailr-package}
 \docType{package}
 \title{
-  DataSailr enables intuitive row by row data manipulation
+  Fast Row by Row Data Processing Tool, Using 'Sailr' Language
 }
 \description{
-  DataSailr package enables intuitive row by row data manipulation. The process can be written in Sailr lang, a language designed for data manipulation. A library called libsailr is used as its internal processing engine. Libsailr is written in C/c++, so the data manipulation speed is relatively fast. 
+  A fast row by row data processing tool. You can write data manipulation code in 'Sailr' language which is specially intended for the data manipulation. The package uses 'libsailr' (C/C++ library) for its 'Sailr' code parsing and its execution.
 }
 \details{
   The core engine of this package is libsailr. Libsailr takes Sailr script and does arithmetic calculations and string/character manipulations. This R package wraps libsair, and passes values of each row to the libsailr library. The results of 
-  datasailr::sail() is the main function of this package. This function takes data.frame as the 1st argument and Sailr script as the 2nd argument. (Note that the 1st argument is data.frame, so you can use this package with %>% operator (in magrittr package), and combine this with functions of dplyr.)
+  datasailr::sail() is the main function of this package. This function takes data.frame as the 1st argument and Sailr script as the 2nd argument.
 }
 \author{
 Toshi Umehara, toshi@niceume.com.
 Maintainer: Toshi Umehara <toshi@niceume.com>
 }
-\references{
-  This optional section can contain literature or other references for background information.
-}
 \keyword{ package }
 \seealso{
   \code{\link{sail}}.
-  http://libsailr.github.io
 }
 \examples{
 library(datasailr)

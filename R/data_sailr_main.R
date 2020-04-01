@@ -1,4 +1,4 @@
-sail = function( df , code , fullData = FALSE ,  rowname = "_rowname_" ){
+sail = function( df , code , fullData = TRUE ,  rowname = "_rowname_" ){
 	colnames_df = colnames(df)
 	rowname_added_temporarily = F
 
