@@ -28,6 +28,8 @@
     + DESCRIPTION file is updated. (Encoding and SystemRequirements)
     + Example script is added to package document.
 
+* Vector of factor class is supported. They are now dealt as CharactorVector. (Apr. 1 2020)
+
 
 ## Version 0.8.1
 

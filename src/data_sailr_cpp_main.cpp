@@ -46,8 +46,8 @@ typedef unsigned int SXPTYPE;
 
 // Each element of tuple corresponds to 
 // 0. column name, 1. original vector, 2. SXPTYPE, 3. size, 4. extra vector (doubles for ints. ints for doubles, new STRs for STRSXP.).
-// 5. type information(Previously std::vector<int>* )
-typedef std::tuple< char* , void* , SXPTYPE , int , void*, void* > VEC_ELEM;
+// 5. type information(Previously std::vector<int>* ) 6. std::string* class_name 7. std::vector<std::string>* levels 
+typedef std::tuple< char* , void* , SXPTYPE , int , void*, void* , std::string*, std::vector<std::string>* > VEC_ELEM;
 typedef std::vector< VEC_ELEM > VEC_LIST; 
 
 void vec_list_add_int_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_vec , int size);
@@ -92,7 +92,7 @@ vec_list_add_int_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_vec, 
     cpp_type_vec = new std::vector<int> (size, DBLNUM );
   }
     
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_i_vec, INTSXP , size, (void*) cpp_d_vec , (void*) cpp_type_vec };
+  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_i_vec, INTSXP , size, (void*) cpp_d_vec , (void*) cpp_type_vec , NULL, NULL};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -120,7 +120,7 @@ vec_list_add_double_vec( VEC_LIST* vec_list, char* var_name, NumericVector* r_ve
   }
   std::vector<int>* cpp_i_vec = new std::vector<int> (size);
   std::vector<int>* cpp_type_vec = new std::vector<int> (size, DBLNUM );
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_d_vec, REALSXP , size, (void*) cpp_i_vec, (void*) cpp_type_vec};
+  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_d_vec, REALSXP , size, (void*) cpp_i_vec, (void*) cpp_type_vec, NULL, NULL};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -139,7 +139,41 @@ vec_list_add_string_vec( VEC_LIST* vec_list, char* var_name, StringVector* r_vec
   }
   std::vector<std::string* > *new_pvec_pstr = new std::vector<std::string* >(size, NULL);
   std::vector<int>* cpp_updated_vec = new std::vector<int> ( size, ORIGINAL );
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec};
+  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec, NULL, NULL};
+  vec_list->push_back( new_vec_elem );
+}
+
+void
+vec_list_add_factor_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_vec , int size )
+{
+  std::vector<std::string*>* pvec_pstr ; 
+
+  std::string* class_name;
+  StringVector r_attr_class = r_vec->attr("class");
+  class_name = new std::string(r_attr_class[0]);
+
+  std::vector<std::string>* factor_levels;
+  StringVector r_factor_levels = r_vec->attr("levels");
+  int level_size = r_factor_levels.size();
+  factor_levels= new std::vector<std::string>(level_size);
+  int level_idx;
+  for(level_idx = 0 ; level_idx < level_size; ++level_idx){
+    factor_levels->operator[](level_idx) = r_factor_levels[level_idx];
+  }
+
+  if(r_vec != NULL){
+    pvec_pstr = new std::vector<std::string*>(size);
+    int idx;
+    for(idx = 0; idx < size ; ++idx ){
+      pvec_pstr->operator[](idx) = new std::string( factor_levels->operator[](r_vec->operator[](idx) - 1));
+    }
+  }else{
+    // This branch should never be run
+    pvec_pstr = new std::vector<std::string*>(size, NULL);
+  }
+  std::vector<std::string* > *new_pvec_pstr = new std::vector<std::string* >(size, NULL);
+  std::vector<int>* cpp_updated_vec = new std::vector<int> ( size, ORIGINAL );
+  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec, class_name, factor_levels};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -147,7 +181,7 @@ void
 vec_list_add_null_vec ( VEC_LIST* vec_list, char* var_name , int size)
 {
   std::vector<int>* cpp_vec = new std::vector<int>(size);
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_vec, NILSXP , size, NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_vec, NILSXP , size, NULL, NULL, NULL, NULL};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -223,6 +257,8 @@ vec_list_free( VEC_LIST* vl){
 			IF_DEBUG( Rcpp::Rcout << "Unintended type of element is found (" << var_name << ")"  << std::endl; );
 			break;
 		}
+        delete std::get<6>(*it);
+        delete std::get<7>(*it);
 	}
 
 	delete vl;
@@ -274,11 +310,22 @@ ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_
 		IntegerVector int_vec;
 		NumericVector num_vec;
 		StringVector  str_vec;
+
+		StringVector r_attr_class;
+		std::string r_class_name;
+
 		switch( TYPEOF(df[var_name]) ){
 		case INTSXP:
 			int_vec = df[var_name];
-			vec_list_add_int_vec ( vec_list, var_name, &int_vec , int_vec.size());
-			IF_DEBUG( Rcpp::Rcout << "Added to VEC_LIST as int vector" << std::endl; );
+			r_attr_class = int_vec.attr("class");
+			r_class_name = (std::string) r_attr_class[0];
+			if( r_class_name.compare( "factor") != 0 ){  // Normal IntegerVector
+				vec_list_add_int_vec ( vec_list, var_name, &int_vec , int_vec.size());
+				IF_DEBUG( Rcpp::Rcout << "Added to VEC_LIST as int vector" << std::endl; );
+			}else{  // Factor IntegerVector
+				vec_list_add_factor_vec ( vec_list, var_name, &int_vec , int_vec.size());
+				IF_DEBUG( Rcpp::Rcout << "Added to VEC_LIST as string vector (<= from IntegerVector with 'factor' class attribute)" << std::endl; );
+			}
 			break;
 		case REALSXP:
 			num_vec = df[var_name];

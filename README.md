@@ -192,8 +192,8 @@ R can handle vectors, list, S4 class objects, and so on. Among those R objects, 
 * numeric vector : DataSailr deals with it as double.
 * complex vector : Not supported
 * character vector : DataSailr deals with it as string.
-* factor (PLAN) : DataSailr imports it as string. (Not supported yet)
-    + Precisely, factor is a type called S3 class. S3 class is an R type with "class" attribute and some additional attributes (such as levels) required by the class. Internally factor is just an integer vector with these attributes.
+* factor : DataSailr deals with it as string.
+    + Precisely, factor is a type called S3 class. S3 class is an R type with "class" attribute and some additional attributes (such as levels) required by the class. Internally factor is just an integer vector with these attributes. Attribute of "levels" is assumed to be CharacterVector in the current implementaion.
 * list : not supported.
 * S3 class objects : As mentioned in factor, the base type of S3 is a basic R type. If the basic R type is supported by DataSailr, the S3 type can be dealt from DataSailr. However, DataSailr's interpretation is not as the user's intention, but follows the internal data type. (i.e.) Factor is recognized as an integer vector.
 * S4 class objects : Not supported
@@ -206,7 +206,7 @@ R can handle vectors, list, S4 class objects, and so on. Among those R objects, 
 | Double (Real) Vector   | Double        | 
 | Character Vector       | String        |
 | Boolean Vector         | Int (0/1)     |
-| Factor (Plan)          | String (Not supported yet)|
+| Factor                 | String        |
 | List (No plan)         | No plan to be supported |
 
 
