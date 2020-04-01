@@ -12,4 +12,8 @@
 \arguments{
   No arguments required.
 }
+\examples{
+library(datasailr)
+test_sail()
+}
 

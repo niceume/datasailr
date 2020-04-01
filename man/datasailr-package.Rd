@@ -26,10 +26,10 @@ Maintainer: Toshi Umehara <toshi@niceume.com>
   http://libsailr.github.io
 }
 \examples{
-  library(datasailr)
-  data(mtcars)
+library(datasailr)
+data(mtcars)
 
-  code_example = 'powerful = .
+code_example = 'powerful = .
   if( 145 >= hp && hp > 0 ){
     powerful = 0
   }else if( hp > 145 ){
@@ -51,6 +51,6 @@ Maintainer: Toshi Umehara <toshi@niceume.com>
   company = rexp_matched(1)
 '
 
-datasailr::sail(mtcars, code_example, fullData = TRUE)
+sail(mtcars, code_example, fullData = TRUE)
 }
 

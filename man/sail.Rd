@@ -15,4 +15,20 @@
   \item{fullData}{ When fullData is set False (default value), only the columns corresponding to left-hand-side(LHS) variables in sailr scripts are returned. (e.g. In Sailr script, bmi = weight / height / height , the variable bmi is the LHS. ) If set True, all the columns are returned. This option is intended to minimize the memory usage.}
   \item{rowname}{ Dataframe's row names are accessed via the variable name specified by this option. The default variable name is _rowname_, meaning that _rowname_ represents dataframe's row names in Sailr script, though this does not allow assignment. Even if you assign some value to this variable, they are not reflected in the row names of the result dataframe. }
 }
+\examples{
+library(datasailr)
+data(iris)
+
+iris_code = '
+iris_type = .
+if ( Species == "setosa" ) { 
+    iris_type = 1 
+}else if( Species == "versicolor" ) { 
+    iris_type = 2
+}else if(Species == "virginica" ) { 
+    iris_type = 3 
+}
+'
+sail(iris, iris_code, fullData = TRUE)
+}
 
