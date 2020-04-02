@@ -10,8 +10,7 @@
   A fast row by row data processing tool. You can write data manipulation code in 'Sailr' language which is specially intended for the data manipulation. The package uses 'libsailr' (C/C++ library) for its 'Sailr' code parsing and its execution.
 }
 \details{
-  The core engine of this package is libsailr. Libsailr takes Sailr script and does arithmetic calculations and string/character manipulations. This R package wraps libsair, and passes values of each row to the libsailr library. The results of 
-  datasailr::sail() is the main function of this package. This function takes data.frame as the 1st argument and Sailr script as the 2nd argument.
+  The main function, datasailr::sail(), takes dataframe as its 1st argument and 'Sailr' script as its 2nd argument, and returns the processing results as dataframe. This package works with 'libsailr' library, which conducts arithmetic calculations and string/character manipulations following 'Sailr' script. This 'DataSailr' package passes both 'Sailr' script and values of each row of dataframe to the 'libsailr', and 'libsailr' processes those values of each row. The processing results are stored and are returned as dataframe. 
 }
 \author{
 Toshi Umehara, toshi@niceume.com.
