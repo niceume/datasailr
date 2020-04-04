@@ -15,6 +15,9 @@
   \item{fullData}{ When fullData is set FALSE, only the columns corresponding to left-hand-side(LHS) variables in Sailr scripts are returned. (e.g. In Sailr script, bmi = weight / height / height , the variable bmi is the LHS.) If set TRUE, all the columns are returned. }
   \item{rowname}{ Dataframe's row names are accessed via the variable name specified by this option. The default variable name is _rowname_, meaning that _rowname_ represents dataframe's row names in 'Sailr' script, though this does not allow assignment. Even if you assign some value to this variable, they are not reflected in the row names of the resultant dataframe. }
 }
+\value{
+  If fullData argument is set FALSE, return value is a data.frame. If fullData is TRUE, the result is created by cbind(), which concatenate the original input and newly created dataframe. For example, if the original input is 'data.table', the return value is 'data.table'.
+}
 \examples{
 library(datasailr)
 data(iris)

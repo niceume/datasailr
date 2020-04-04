@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Note
 # This script is discussed in https://github.com/RcppCore/Rcpp/issues/136
