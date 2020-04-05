@@ -1111,6 +1111,12 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	IF_DEBUG( Rcpp::Rcout << "Convert vec_list to Rcpp::DataFrame" << std::endl; );
 	DataFrame new_df = ConvertVecList(vec_list, lhs_vars);
 	
+	/* Free memory of instructions */
+	IF_DEBUG( Rcpp::Rcout << "Free VM instruction list" << std::endl; );
+	sailr_vm_inst_list_free( inst_list );
+	IF_DEBUG( Rcpp::Rcout << "Free VM instruction code" << std::endl; );
+	sailr_vm_inst_code_free( vmcode );
+
 	/* Free memory */
 	IF_DEBUG( Rcpp::Rcout << "Free parser tree" << std::endl; );
 	sailr_tree_free(ps);
