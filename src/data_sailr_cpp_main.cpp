@@ -1111,6 +1111,12 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	IF_DEBUG( Rcpp::Rcout << "Convert vec_list to Rcpp::DataFrame" << std::endl; );
 	DataFrame new_df = ConvertVecList(vec_list, lhs_vars);
 	
+	// Free temporarily used cstring variable names
+	// In the future, it is better to provide iteration for var name access, then no need to free.
+	sailr_varnames_free(var_array, var_num);
+	sailr_varnames_free(lhs_var_array, lhs_var_num);
+	sailr_varnames_free(rhs_var_array, rhs_var_num);
+
 	/* Free memory of instructions */
 	IF_DEBUG( Rcpp::Rcout << "Free VM instruction list" << std::endl; );
 	sailr_vm_inst_list_free( inst_list );
