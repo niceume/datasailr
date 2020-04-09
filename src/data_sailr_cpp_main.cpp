@@ -38,8 +38,10 @@ typedef unsigned int SXPTYPE;
 // Macro
 #ifdef DEBUG
 #define IF_DEBUG(x) do{ x } while(false) 
+#define IF_DEBUG_DECL(x) x
 #else
 #define IF_DEBUG(x) do{ } while( false )
+#define IF_DEBUG_DECL(x) do{ } while( false )
 #endif
 
 /* --------------------------------------------------------- */
@@ -188,7 +190,7 @@ vec_list_add_null_vec ( VEC_LIST* vec_list, char* var_name , int size)
 
 void
 vec_list_free( VEC_LIST* vl){
-	IF_DEBUG( char* var_name );
+	IF_DEBUG_DECL( char* var_name; );
 	void* column_vec1;
 	void* column_vec2;
 	void* column_vec3;
