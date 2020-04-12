@@ -29,7 +29,10 @@ $(SHLIB): libsailr/libsailr.a
 
 libsailr/libsailr.a: $(ONIGMO_LIB)/onigmo.a
 	@echo "compiling libsailr engine."
-	$(MAKE) build --directory libsailr ONIG_INCLUDE_DIR=../$(ONIGMO_INCLUDE) CPPC="$(CXX)" CC="$(CC)"  AR="$(AR) rvs" 
+	$(MAKE) build --directory libsailr CC="$(CC)" \
+                              CFLAGS="$(CFLAGS) $(CPICFLAGS) -I. -Ivm -Istring -Isimple_re -Isimple_date  -I../$(ONIGMO_INCLUDE) " \
+                              CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS) $(CPICFLAGS) -Ivm -Istring" \
+                              AR="$(AR) rvs" 
 
 
 ifeq ($(REQUIRE_AUTOTOOLS), YES)
@@ -53,7 +56,7 @@ $(ONIGMO_LIB)/onigmo.a: $(ONIGMO_PROJ_NAME)/m4/lt~obsolete.m4
 	@echo "Makevars.win without autotools"
 	mkdir -p $(ONIGMO_LIB)
 	mkdir -p $(ONIGMO_INCLUDE)
-	cd $(ONIGMO_PROJ_NAME) && $(MAKE) -f win32/Makefile.mingw ARCH="$(ARCH)" CXX="$(CXX)" CC="$(CC)" ARLIB="$(AR)" ARDLL="$(CC)" RANLIB="$(RANLIB)" RC="$(RESCOMP)"
+	cd $(ONIGMO_PROJ_NAME) && $(MAKE) -f win32/Makefile.mingw ARCH="$(ARCH)" CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" CXXFLAGS="$(CXXFLAGS) $(CPICFLAGS)" ARLIB="$(AR)" ARDLL="$(CC)" RANLIB="$(RANLIB)" RC="$(RESCOMP)"
 	cp $(ONIGMO_PROJ_NAME)/build_$(ARCH)/libonigmo.a $(ONIGMO_LIB)/
 	cp $(ONIGMO_PROJ_NAME)/onigmo.h $(ONIGMO_INCLUDE)/
 

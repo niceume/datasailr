@@ -13,6 +13,10 @@ else
   PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -lonigmo 
 endif
 
+@add_onigmo_include_path@ #This defines the path, $(ONIG_INCLUDE_DIR)
+LIBSAILR_CFLAGS=$(CFLAGS) $(CPICFLAGS) -I. -Ivm -Istring -Isimple_re -Isimple_date -I$(ONIG_INCLUDE_DIR)
+LIBSAILR_CXXFLAGS=$(CXXFLAGS) $(CPICFLAGS) -Ivm -Istring
+
 # Note: -lxxx looks up for libraries in an order of libxxx.so and libxxx.a
 # Note: -l:libyyy.a directly looks up for the library with the filename of libyyy.a
 # https://stackoverflow.com/questions/6578484/telling-gcc-directly-to-link-a-library-statically
@@ -33,5 +37,5 @@ libsailr/libsailr.a:
 	@echo "compiling libsailr engine."
 	@echo $$PATH
 	@echo "Makevars.in"
-	$(MAKE) build --directory libsailr @add_onigmo_include_path@ ## CC_USER_DEFINES="-DDEBUG"
+	$(MAKE) build --directory libsailr  CXX="$(CXX)" CC="$(CC)" CFLAGS="$(LIBSAILR_CFLAGS)" CXXFLAGS="$(LIBSAILR_CXXFLAGS)" AR="$(AR) rvs" ## CC_USER_DEFINES="-DDEBUG"
 

@@ -4,9 +4,34 @@ AC_PREREQ([2.69])
 AC_INIT([datasailr], 0.8.1, toshi@niceume.com)
 AC_CONFIG_SRCDIR([src/Makevars.in])
 
+# Check R_HOME
+echo "R_HOME is set to ${R_HOME}"
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+
+# C++
+CXX11=`"${R_HOME}/bin/R" CMD config CXX11`
+if test -z "$CXX11"; then
+  AC_MSG_ERROR([No C++11 compiler is available])
+fi
+CXX11STD=`"${R_HOME}/bin/R" CMD config CXX11STD`
+CXX="${CXX11} ${CXX11STD}"
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXX11FLAGS`
 AC_LANG(C++)
 AC_REQUIRE_CPP
 AC_PROG_CXX
+
+# C
+
+CC=`"${R_HOME}/bin/R" CMD config CC`
+CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
+CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+AC_LANG(C)
+AC_REQUIRE_CPP
+AC_PROG_CC
+
 
 # compile Attributes for rcpp
 sh ./exec/compileAttr.sh
@@ -80,9 +105,9 @@ AS_IF( [test "$which_onigmo" = "USER"],
   fi
   if test -f "${current_path}/src/Onigmo/configure" ; then
 	eval "mkdir -p ${current_path}/src/Onigmo/build"
-    eval "cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CFLAGS=-fPIC; cd  ${current_path};"
+    eval 'cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CC="${CC}" CFLAGS="-fPIC" CXX="${CXX}" ARLIB="${AR}" ARDLL="${CC}" RANLIB="${RANLIB}" RC="${RESCOMP}"; cd  ${current_path};'
     echo "${current_path}/src/Onigmo/configure is successfully executed."
-    eval "make --directory ${current_path}/src/Onigmo/"
+    eval 'make --directory ${current_path}/src/Onigmo/'
     eval "make install --directory ${current_path}/src/Onigmo/"
     echo "make is successfully executed."
     eval "rm ${current_path}/src/Onigmo/build/lib/libonigmo.so"
