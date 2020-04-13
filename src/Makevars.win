@@ -30,7 +30,7 @@ $(SHLIB): libsailr/libsailr.a
 libsailr/libsailr.a: $(ONIGMO_LIB)/onigmo.a
 	@echo "compiling libsailr engine."
 	$(MAKE) build --directory libsailr CC="$(CC)" \
-                              CFLAGS="$(CFLAGS) $(CPICFLAGS) -I. -Ivm -Istring -Isimple_re -Isimple_date  -I../$(ONIGMO_INCLUDE) " \
+                              CFLAGS="$(CFLAGS) $(CPICFLAGS) -I. -Ivm -Istring -Isimple_re -Isimple_date  -I../$(ONIGMO_INCLUDE) @add_r_include_path@  " \
                               CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS) $(CPICFLAGS) -Ivm -Istring" \
                               AR="$(AR) rvs" 
 

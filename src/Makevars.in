@@ -37,5 +37,5 @@ libsailr/libsailr.a:
 	@echo "compiling libsailr engine."
 	@echo $$PATH
 	@echo "Makevars.in"
-	$(MAKE) build --directory libsailr  CXX="$(CXX)" CC="$(CC)" CFLAGS="$(LIBSAILR_CFLAGS)" CXXFLAGS="$(LIBSAILR_CXXFLAGS)" AR="$(AR) rvs" ## CC_USER_DEFINES="-DDEBUG"
+	$(MAKE) build --directory libsailr  CXX="$(CXX)" CC="$(CC)" CFLAGS="$(LIBSAILR_CFLAGS) @add_r_include_path@ " CXXFLAGS="$(LIBSAILR_CXXFLAGS)" AR="$(AR) rvs" ## CC_USER_DEFINES="-DDEBUG"
 
