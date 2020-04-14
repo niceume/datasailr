@@ -908,8 +908,30 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 
 	// Initializing parser_state, which stores TreeNode*.
 	IF_DEBUG( Rcpp::Rcout << "Constructing parse tree."  << std::endl ; );
+	int parse_result;
 	parser_state_object* ps = sailr_new_parser_state ((char*)"Code from R", table);
-	sailr_run_parser( code.c_str(), ps );  // Now ps now holds AST tree and ptr_table!!
+	parse_result = sailr_run_parser( code.c_str(), ps );  // Now ps now holds AST tree and ptr_table!!
+
+	// Check whether parsing succeeded or not. When fails, free memory and stop this function.
+	if(parse_result == 0 ){
+	  IF_DEBUG( Rcpp::Rcout << "Success: sailr script is successfully parsed" << std::endl; );
+	}else {
+	  /* Free memory */
+	  IF_DEBUG( Rcpp::Rcout << "Free parser tree" << std::endl; );
+	  sailr_tree_free(ps);
+	  IF_DEBUG( Rcpp::Rcout << "Free pointer table" << std::endl; );
+	  sailr_ptr_table_del_all(&table);
+	  IF_DEBUG( Rcpp::Rcout << "Free parser state object" << std::endl; );
+	  sailr_parser_state_free(ps);
+
+	  if(parse_result == 1){
+	    Rcpp::stop( "sailr script syntax error (code: %d)\n", parse_result );
+	  }else if(parse_result == 2){
+	    Rcpp::stop( "memory exhausted during parsing (code: %d)\n", parse_result );
+	  }else{
+	    Rcpp::stop( "yyparse returned unknown code (code: %d)\n" , parse_result );
+	  }
+	}
 
 	// Show parse tree
 	IF_DEBUG( Rcpp::Rcout << "Show parse tree"  << std::endl ; );

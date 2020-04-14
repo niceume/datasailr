@@ -1,5 +1,11 @@
 # HISTORY
 
+## Version 0.8.3
+
+* Memory leaks fixed at various points that are pointed out after CRAN submission. (Apr.5-13 2020)
+* Check whether parsing succeded or not. Function stops if the Sailr script has a wrong syntax. (Apr.14 2020)
+
+
 ## Version 0.8.2
 
 * CRAN release candidate (Mar. 12 2020)
