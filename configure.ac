@@ -36,6 +36,8 @@ AC_LANG(C)
 AC_REQUIRE_CPP
 AC_PROG_CC
 
+# Make
+MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
 
 # compile Attributes for rcpp
 sh ./exec/compileAttr.sh
@@ -111,9 +113,9 @@ AS_IF( [test "$which_onigmo" = "USER"],
 	eval "mkdir -p ${current_path}/src/Onigmo/build"
     eval 'cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CC="${CC}" CFLAGS="${CPICFLAGS} ${CFLAGS} ${CPPFLAGS}" CXX="${CXX}" ARLIB="${AR}" ARDLL="${CC}" RANLIB="${RANLIB}" RC="${RESCOMP}"; cd  ${current_path};'
     echo "${current_path}/src/Onigmo/configure is successfully executed."
-    eval 'make --directory ${current_path}/src/Onigmo/'
-    eval "make install --directory ${current_path}/src/Onigmo/"
-    echo "make is successfully executed."
+    eval '${MAKE} --directory ${current_path}/src/Onigmo/'
+    eval "${MAKE} install --directory ${current_path}/src/Onigmo/"
+    echo "${MAKE} is successfully executed."
     eval "rm ${current_path}/src/Onigmo/build/lib/libonigmo.so"
 	echo "dynamic library of onigmo is deleted"
   else
