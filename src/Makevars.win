@@ -60,6 +60,8 @@ $(ONIGMO_LIB)/onigmo.a: $(ONIGMO_PROJ_NAME)/m4/lt~obsolete.m4
 	cp $(ONIGMO_PROJ_NAME)/build_$(ARCH)/libonigmo.a $(ONIGMO_LIB)/
 	cp $(ONIGMO_PROJ_NAME)/onigmo.h $(ONIGMO_INCLUDE)/
 
+# Note: RESCOMP makefile variable is only available (necessary) for Windows platform
+
 # lt~obsolete.m4 cannot be included for CRAN.
 
 $(ONIGMO_PROJ_NAME)/m4/lt~obsolete.m4: $(ONIGMO_PROJ_NAME)/m4/lt_obsolete.m4

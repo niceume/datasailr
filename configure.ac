@@ -36,6 +36,10 @@ AC_LANG(C)
 AC_REQUIRE_CPP
 AC_PROG_CC
 
+# AR & RANLIB
+AR=`"${R_HOME}/bin/R" CMD config AR`
+RANLIB=`"${R_HOME}/bin/R" CMD config RANLIB`
+
 # Make
 MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
 
@@ -74,6 +78,9 @@ AC_ARG_WITH([system-onigmo],
 # I would like to find path for for include and lib of onigmo.
 # set those pathes to onigmo_include_dir and onigmo_lib_dir
 
+# Onigmo uses libtool for its compilation. For static library building, LDFLAGS="-static" is passed only to make, not to ./configure.
+# (ref.) srd's answer in https://stackoverflow.com/questions/20068947/how-to-static-link-linux-software-that-uses-configure
+
 
 AS_IF( [test "$which_onigmo" = "USER"],
   [
@@ -111,13 +118,12 @@ AS_IF( [test "$which_onigmo" = "USER"],
   fi
   if test -f "${current_path}/src/Onigmo/configure" ; then
 	eval "mkdir -p ${current_path}/src/Onigmo/build"
-    eval 'cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CC="${CC}" CFLAGS="${CPICFLAGS} ${CFLAGS} ${CPPFLAGS}" CXX="${CXX}" ARLIB="${AR}" ARDLL="${CC}" RANLIB="${RANLIB}" RC="${RESCOMP}"; cd  ${current_path};'
+    eval 'cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CC="${CC}" CFLAGS="${CPICFLAGS} ${CFLAGS} ${CPPFLAGS}" CXX="${CXX}" ARLIB="${AR}" ARDLL="${CC}" RANLIB="${RANLIB}" ; cd  ${current_path};'
     echo "${current_path}/src/Onigmo/configure is successfully executed."
-    eval '${MAKE} --directory ${current_path}/src/Onigmo/'
+    eval '${MAKE} --directory ${current_path}/src/Onigmo/  LDFLAGS="-static"'
     eval "${MAKE} install --directory ${current_path}/src/Onigmo/"
     echo "${MAKE} is successfully executed."
-    eval "rm ${current_path}/src/Onigmo/build/lib/libonigmo.so"
-	echo "dynamic library of onigmo is deleted"
+	echo "only static library is generated."
   else
     AC_MSG_ERROR("${current_path}/src/Onigmo/configure is not found in this package.")
   fi
