@@ -1048,6 +1048,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	char new_type;
 	std::vector<void*> new_vec_info;
 	void** new_ptr;
+	bool vm_exec_success = true;
 
 	IF_DEBUG( Rcpp::Rcout << "Calculation started. (" << "Num of rows to be processed: " << num_of_rows << ")" << std::endl; );
 
@@ -1056,7 +1057,10 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		IF_DEBUG( if(row_idx == 0){ Rcpp::Rcout << "Virtual machine is generated for processing the first row." << std::flush;} );
 
 		update_sailr_ptr_table( table, var_array, var_num, vec_list, row_idx );	
-		sailr_vm_exec_code(vmcode, vmcode_size , table , vmstack);
+		if( sailr_vm_exec_code(vmcode, vmcode_size , table , vmstack) != 1 ){
+			vm_exec_success = false;  // Runtime error
+			goto finalize;
+		}
 		IF_DEBUG( Rcpp::Rcout << "VM execution finished." << std::endl; );
 		IF_DEBUG( if(row_idx == 0){ Rcpp::Rcout << "Showing ptr_table just after the first row calculation." << std::flush;} );
 		IF_DEBUG( if(row_idx == 0){ sailr_ptr_table_show_all(&table); std::cout << std::flush;} );
@@ -1131,9 +1135,14 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	IF_DEBUG( Rcpp::Rcout << "Show contents of vec list." << std::endl; );
 	IF_DEBUG( ShowVecList(vec_list, 10); );
 	
+	finalize: ;
+
 	/* Convert VEC_LIST* to DataFrame. */
 	IF_DEBUG( Rcpp::Rcout << "Convert vec_list to Rcpp::DataFrame" << std::endl; );
-	DataFrame new_df = ConvertVecList(vec_list, lhs_vars);
+	DataFrame new_df;
+	if(vm_exec_success){
+		new_df = ConvertVecList(vec_list, lhs_vars);
+	}
 	
 	// Free temporarily used cstring variable names
 	// In the future, it is better to provide iteration for var name access, then no need to free.
@@ -1159,8 +1168,12 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 
 	/* Free VEC_LIST */
 	vec_list_free(vec_list);
-		
-	return new_df;  // should return dataframe.
+
+	if(vm_exec_success){
+		return new_df;  // should return dataframe.
+	}else{
+	    Rcpp::stop( "sailr virtual machine runtime error. stopped. \n" );
+	}
 }
 
 

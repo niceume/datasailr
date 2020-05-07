@@ -1,5 +1,10 @@
 # HISTORY
 
+## Version 0.8.4
+
+* Cross-platform compilation is improved.
+* The core processing library, libsailr has become able to report runtime errors, and DataSailr supports it.
+
 ## Version 0.8.3
 
 * Memory leaks fixed at various points that are pointed out after CRAN submission. (Apr.5-13 2020)
