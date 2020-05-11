@@ -55,7 +55,7 @@ typedef std::vector< VEC_ELEM > VEC_LIST;
 void vec_list_add_int_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_vec , int size);
 void vec_list_add_double_vec( VEC_LIST* vec_list, char* var_name, NumericVector* r_vec , int size);
 void vec_list_add_string_vec( VEC_LIST* vec_list, char* var_name, StringVector* r_vec , int size);
-VEC_LIST* ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars);
+VEC_LIST* ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, int* conversion_error );
 VEC_ELEM* vec_elem_find(VEC_LIST* vl, char* var_name);
 bool   cstring_exists_in_charactervector(char* var_name, CharacterVector var_vector);
 SXPTYPE  vec_elem_type_of(VEC_ELEM* vec_elem);
@@ -268,7 +268,7 @@ vec_list_free( VEC_LIST* vl){
 
 
 VEC_LIST*
-ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_var_names, int num_of_lhs_vars)
+ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_var_names, int num_of_lhs_vars, int* conversion_error)
 {
   char* var_name;
   int var_idx;
@@ -302,11 +302,12 @@ ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_
 			vec_list_add_null_vec ( vec_list, var_name, df.nrows() );
 			continue;
 		}else{
-			Rcout << "Error: " << "\"" << var_name << "\"" << "appears in source code, but deoes not exist in dataframe or appear as LHS. Never to be defined." << std::endl;
+			Rcout << "Error: " << "\"" << var_name << "\"" << " appears in source code, but deoes not exist in dataframe or appear as LHS. Never to be defined." << std::endl;
+			*conversion_error = 1;
 		}
     }else{
 		// This branch means the var_name exists in dataframe.
-		IF_DEBUG( Rcpp::Rcout << "\"" << var_name << "\"" << "exists in dataframe column name (=type known) and also appears as variables (LHS or RHS)." ; );
+		IF_DEBUG( Rcpp::Rcout << "\"" << var_name << "\"" << " exists in dataframe column name (=type known) and also appears as variables (LHS or RHS)." ; );
 
     	// Rcpp:GenericVector col_vec = df[var_name];    
 		IntegerVector int_vec;
@@ -986,7 +987,28 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	
 	// Convert R dataframe into C++ Vec_LIST
 	IF_DEBUG( Rcpp::Rcout << "Convert Rcpp DataFame to C++ VEC_LIST" << std::endl; );
-	VEC_LIST* vec_list = ConvertDataFrame(df, var_array, var_num, lhs_var_array, lhs_var_num );
+
+	int conversion_error = 0;
+	VEC_LIST* vec_list = ConvertDataFrame(df, var_array, var_num, lhs_var_array, lhs_var_num , &conversion_error );
+	if( conversion_error != 0 ){
+		// Free variable names
+		sailr_varnames_free(var_array, var_num);
+		sailr_varnames_free(lhs_var_array, lhs_var_num);
+		sailr_varnames_free(rhs_var_array, rhs_var_num);
+
+		// Free parser tree
+		sailr_tree_free(ps);
+
+		// Free pointer table
+		sailr_ptr_table_del_all(&table);
+
+		// Free parser_state object
+		sailr_parser_state_free(ps);
+
+		// Free VEC_LIST
+		vec_list_free(vec_list);
+		Rcpp::stop("Stopped: check variable names again");
+	}
 
 	// Extract nil variables from vec_list
 	IF_DEBUG( Rcpp::Rcout << "nil vars are (type) unknown (LHS) variables that do not exist in dataframe. " << std::endl; );
