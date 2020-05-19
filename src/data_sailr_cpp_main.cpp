@@ -401,10 +401,10 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
       typevec = Rcpp::wrap( *((std::vector<int>*)column_vec3));  
       dbl_pos = (typevec == DBLNUM);
       if(is_false(any(dbl_pos))){
-        new_df.push_back(intvec);
+        new_df.push_back(intvec,var_name);
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else if(all(is_na(ifelse(dbl_pos, dblvec, NA_REAL)))){ // All the DBLNUM positions have na/nan/-nan. Return intvec.
-        new_df.push_back(ifelse(!dbl_pos, intvec, NA_INTEGER));
+        new_df.push_back(ifelse(!dbl_pos, intvec, NA_INTEGER), var_name);
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else{
         for( index = 0 ; index < typevec.size() ; ++index ){
@@ -419,7 +419,7 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
             Rcpp::Rcout << "ERROR: type_vec should have INTNUM or DBLNUM" << std::endl;
           }
         }
-        new_df.push_back(dblvec);
+        new_df.push_back(dblvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "numeric(=double) vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }
       break;
@@ -435,10 +435,10 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
       typevec = Rcpp::wrap( *((std::vector<int>*)column_vec3));
       dbl_pos = (typevec == DBLNUM);
       if(is_false(any(dbl_pos))){
-        new_df.push_back(intvec);
+        new_df.push_back(intvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else if(all(is_na(ifelse(dbl_pos, dblvec, NA_REAL)))){ // All the DBLNUM positions have na/nan/-nan. Return intvec.
-        new_df.push_back(ifelse(!dbl_pos, intvec, NA_INTEGER));
+        new_df.push_back(ifelse(!dbl_pos, intvec, NA_INTEGER), var_name);
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else{
         for( index = 0 ; index < typevec.size() ; ++index ){
@@ -453,7 +453,7 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
             Rcpp::Rcout << "ERROR: type_vec should have INTNUM or DBLNUM" << std::endl;
           }
         }
-        new_df.push_back(dblvec);
+        new_df.push_back(dblvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "numeric(=double) vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }
       break;
@@ -487,7 +487,7 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
             IF_DEBUG( Rcpp::Rcout << "ERROR: type_vec should have UPDATED or ORIGINAL. TYPE ID: " << updated_vec[idx] << std::endl; );
           }
       }
-      new_df.push_back(rstrvec);
+      new_df.push_back(rstrvec, var_name);
       IF_DEBUG( Rcpp::Rcout << "character(=string) vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       break;
     case NILSXP:
@@ -496,8 +496,9 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
       break;
     }
   }
-  new_df.attr("names") = name_vec;
-  Rcpp::DataFrame new_df_out = Rcpp::DataFrame::create(new_df , _["stringsAsFactors"] = false );  // This step is required to output proper data.frame.
+//  new_df.attr("names") = name_vec; // Previsouly used. Now, column name is added with push_back method.
+
+  Rcpp::DataFrame new_df_out = Rcpp::DataFrame::create(new_df, _["stringsAsFactors"] = false);  // This step is required to output proper data.frame. Also, stringsAsFactors attribute is required to be dataframe.
   return new_df_out;
 }
 
