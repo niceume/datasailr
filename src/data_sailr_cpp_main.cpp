@@ -1113,15 +1113,14 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		    	IF_DEBUG( Rcpp::Rcout << "Its int value on ptr_table is copied into new vector in VEC_LIST." << std::endl;);
 				((std::vector<int>*) new_vec_info[0])->operator[](row_idx) = *((int*) *new_ptr) ;
 				((std::vector<int>*) new_vec_info[2])->operator[](row_idx) = INTNUM;
+				sailr_ptr_table_free_objects(&table, nil_var_name);
 		    }else if (new_type == 'd'){
 				IF_DEBUG( Rcpp::Rcout << "Its double value on ptr_table is copied into new vector in VEC_LIST." << std::endl;);
 				((std::vector<double>*) new_vec_info[0])->operator[](row_idx) = *((double*) *new_ptr);
 				((std::vector<int>*) new_vec_info[2])->operator[](row_idx) = DBLNUM;
+				sailr_ptr_table_free_objects(&table, nil_var_name);
 		    }else if (new_type == 's'){
 				IF_DEBUG( Rcpp::Rcout << "New std::string same as the one on ptr_table is created, and is copied into new vector in VEC_LIST." << std::endl;);
-				std::string* new_str = new std::string(*((std::string*)*new_ptr));
-				((std::vector<std::string*>*) new_vec_info[1])->operator[](row_idx) = new_str;
-				((std::vector<int>*) new_vec_info[2])->operator[](row_idx) = UPDATED;
 		    }else if (new_type == 'r'){
 				IF_DEBUG( Rcpp::Rcout << "NIl var" << nil_var_name << " is updated to regular expression on ptr_table. Nothing is done for VEC_LIST." << std::endl;);
 			}else{
