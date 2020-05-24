@@ -94,7 +94,7 @@ vec_list_add_int_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_vec, 
     cpp_type_vec = new std::vector<int> (size, DBLNUM );
   }
     
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_i_vec, INTSXP , size, (void*) cpp_d_vec , (void*) cpp_type_vec , NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_i_vec, INTSXP , size, (void*) cpp_d_vec , (void*) cpp_type_vec , NULL, NULL};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -122,7 +122,7 @@ vec_list_add_double_vec( VEC_LIST* vec_list, char* var_name, NumericVector* r_ve
   }
   std::vector<int>* cpp_i_vec = new std::vector<int> (size);
   std::vector<int>* cpp_type_vec = new std::vector<int> (size, DBLNUM );
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_d_vec, REALSXP , size, (void*) cpp_i_vec, (void*) cpp_type_vec, NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_d_vec, REALSXP , size, (void*) cpp_i_vec, (void*) cpp_type_vec, NULL, NULL};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -141,7 +141,7 @@ vec_list_add_string_vec( VEC_LIST* vec_list, char* var_name, StringVector* r_vec
   }
   std::vector<std::string* > *new_pvec_pstr = new std::vector<std::string* >(size, NULL);
   std::vector<int>* cpp_updated_vec = new std::vector<int> ( size, ORIGINAL );
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec, NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec, NULL, NULL};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -175,7 +175,7 @@ vec_list_add_factor_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_ve
   }
   std::vector<std::string* > *new_pvec_pstr = new std::vector<std::string* >(size, NULL);
   std::vector<int>* cpp_updated_vec = new std::vector<int> ( size, ORIGINAL );
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec, class_name, factor_levels};
+  VEC_ELEM new_vec_elem = VEC_ELEM {strdup(var_name), (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec, class_name, factor_levels};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -183,7 +183,7 @@ void
 vec_list_add_null_vec ( VEC_LIST* vec_list, char* var_name , int size)
 {
   std::vector<int>* cpp_vec = new std::vector<int>(size);
-  VEC_ELEM new_vec_elem = VEC_ELEM { var_name, (void*) cpp_vec, NILSXP , size, NULL, NULL, NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_vec, NILSXP , size, NULL, NULL, NULL, NULL};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -259,6 +259,7 @@ vec_list_free( VEC_LIST* vl){
 			IF_DEBUG( Rcpp::Rcout << "Unintended type of element is found (" << var_name << ")"  << std::endl; );
 			break;
 		}
+        free(std::get<0>(*it) );
         delete std::get<6>(*it);
         delete std::get<7>(*it);
 	}
@@ -577,6 +578,7 @@ vec_elem_remove_nil(VEC_LIST* vl, char* nil_var_name)
     vec_elem_name = std::get<0>(*it);
     if( strcmp(vec_elem_name, nil_var_name) == 0){
       nilvec = (std::vector<int>*)std::get<1>(*it);
+      free(vec_elem_name);
       delete(nilvec);
       vl->erase(it);
       return 0;
@@ -1103,7 +1105,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		    // 1. obtain TYPE  **OK**
 		    new_type = sailr_ptr_table_get_type(&table, nil_var_name);  // OK
 		    // 2. update null with new VEC_ELEM corresponding to the TYPE.  
-        	new_vec_info = update_vec_elem_with_new_type(vec_list, strdup(nil_var_name), new_type);  // OK
+        	new_vec_info = update_vec_elem_with_new_type(vec_list, nil_var_name , new_type);  // OK
 		    // 3. obtain pointer
 		    new_ptr = sailr_ptr_table_get_pptr(&table, nil_var_name);  // OK
 		    // 4. copy pointer value to VEC_ELEM
