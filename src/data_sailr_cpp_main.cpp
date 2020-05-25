@@ -1055,6 +1055,11 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		}
 		curr_pr = sailr_ptr_record_next(curr_pr);
 	}
+
+	// Free string objects on ptr_table that are used just for ptr_table initialization.
+	for(auto str_record_iter = str_records.begin(); str_record_iter != str_records.end(); ++str_record_iter){
+		sailr_ptr_record_free_objects( *str_record_iter );
+	}
   
 	IF_DEBUG( Rcpp::Rcout << "Show ptr table before calculation." << std::endl; );
 	IF_DEBUG( sailr_ptr_table_show_all(&table); );
