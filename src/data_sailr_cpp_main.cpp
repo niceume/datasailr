@@ -1037,14 +1037,21 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	// Initialize ptr_table using vec_list's vectors' first element.
 	update_sailr_ptr_table( table, var_array, var_num, vec_list, 0 );
 
-	// Collect regular expression ptr_record s
+	// Collect regular expression ptr_record's & string ptr_record's
 	// Regular expressions on ptr_table need to be reset for every row.
+	// String objects on ptr_table need to be freed (delted) for every row.
 	std::vector<ptr_record_object*> rexp_records;
+	std::vector<ptr_record_object*> str_records;
 	ptr_record_object* curr_pr;
 	curr_pr = sailr_ptr_table_first_record( &table );
 	while( curr_pr != NULL ){
 		if( sailr_ptr_record_get_type(curr_pr) == 'r'){
 			rexp_records.push_back(curr_pr);
+		}
+		if( sailr_ptr_record_get_type(curr_pr) == 's'){
+			if( sailr_ptr_record_is_anonym( curr_pr ) != 1 ){
+				str_records.push_back(curr_pr);
+			}
 		}
 		curr_pr = sailr_ptr_record_next(curr_pr);
 	}
@@ -1120,7 +1127,8 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 				((std::vector<int>*) new_vec_info[2])->operator[](row_idx) = DBLNUM;
 				sailr_ptr_table_free_objects(&table, nil_var_name);
 		    }else if (new_type == 's'){
-				IF_DEBUG( Rcpp::Rcout << "New std::string same as the one on ptr_table is created, and is copied into new vector in VEC_LIST." << std::endl;);
+				IF_DEBUG( Rcpp::Rcout << "New std::string same as the one on ptr_table is created. (Values are not assigned yet)" << std::endl;);
+				str_records.push_back( sailr_ptr_table_find( &table, nil_var_name ) );
 		    }else if (new_type == 'r'){
 				IF_DEBUG( Rcpp::Rcout << "NIl var" << nil_var_name << " is updated to regular expression on ptr_table. Nothing is done for VEC_LIST." << std::endl;);
 			}else{
@@ -1141,6 +1149,11 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		update_sailr_vec_list(vec_list, lhs_vars, table, row_idx ) ; 
 		IF_DEBUG( show_sailr_vec_list_nth(vec_list, row_idx ); );
 		IF_DEBUG( Rcpp::Rcout << "VEC_LIST is updated" << std::endl; );
+
+		// Free string objects on ptr_table
+		for(auto str_record_iter = str_records.begin(); str_record_iter != str_records.end(); ++str_record_iter){
+			sailr_ptr_record_free_objects( *str_record_iter );
+		}
 
 		// reset regular expressions
 		for(auto rexp_iter = rexp_records.begin(); rexp_iter != rexp_records.end(); ++rexp_iter){
