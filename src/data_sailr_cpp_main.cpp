@@ -1038,26 +1038,33 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	update_sailr_ptr_table( table, var_array, var_num, vec_list, 0 );
 
 	// Collect regular expression ptr_record's & string ptr_record's
-	// Regular expressions on ptr_table need to be reset for every row.
-	// String objects on ptr_table need to be freed (delted) for every row.
-	std::vector<ptr_record_object*> rexp_records;
-	std::vector<ptr_record_object*> str_records;
+	// Regular expression literals on ptr_table need to be reset for every row, but need not be deleted.
+	// Regular expressions assigned to some variable need to be deleted. (Next row, it may have different regular expression)
+	// String object literals can stay thorough executions.
+	// String objects assigned to some varialbe need to be freed (delted) for every row.
+	std::vector<ptr_record_object*> rexp_records_for_literals;
+	std::vector<ptr_record_object*> rexp_records_for_vars;
+	std::vector<ptr_record_object*> str_records_for_vars;
 	ptr_record_object* curr_pr;
 	curr_pr = sailr_ptr_table_first_record( &table );
 	while( curr_pr != NULL ){
-		if( sailr_ptr_record_get_type(curr_pr) == 'r'){
-			rexp_records.push_back(curr_pr);
-		}
 		if( sailr_ptr_record_get_type(curr_pr) == 's'){
-			if( sailr_ptr_record_is_anonym( curr_pr ) != 1 ){
-				str_records.push_back(curr_pr);
+			if( sailr_ptr_record_is_anonym( curr_pr ) != 1 ){  // not anonym (=not literal)
+				str_records_for_vars.push_back(curr_pr);
+			}
+		}
+		if( sailr_ptr_record_get_type(curr_pr) == 'r'){
+			if( sailr_ptr_record_is_anonym( curr_pr ) != 1 ){  // not anonym (=not literal)
+				rexp_records_for_vars.push_back(curr_pr);
+			}else{  // anonym (=literal)
+				rexp_records_for_literals.push_back(curr_pr);
 			}
 		}
 		curr_pr = sailr_ptr_record_next(curr_pr);
 	}
 
 	// Free string objects on ptr_table that are used just for ptr_table initialization.
-	for(auto str_record_iter = str_records.begin(); str_record_iter != str_records.end(); ++str_record_iter){
+	for(auto str_record_iter = str_records_for_vars.begin(); str_record_iter != str_records_for_vars.end(); ++str_record_iter){
 		sailr_ptr_record_free_objects( *str_record_iter );
 	}
   
@@ -1133,9 +1140,10 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 				sailr_ptr_table_free_objects(&table, nil_var_name);
 		    }else if (new_type == 's'){
 				IF_DEBUG( Rcpp::Rcout << "New std::string same as the one on ptr_table is created. (Values are not assigned yet)" << std::endl;);
-				str_records.push_back( sailr_ptr_table_find( &table, nil_var_name ) );
+				str_records_for_vars.push_back( sailr_ptr_table_find( &table, nil_var_name ) );
 		    }else if (new_type == 'r'){
 				IF_DEBUG( Rcpp::Rcout << "NIl var" << nil_var_name << " is updated to regular expression on ptr_table. Nothing is done for VEC_LIST." << std::endl;);
+				rexp_records_for_vars.push_back( sailr_ptr_table_find( &table, nil_var_name ) );
 			}else{
 				IF_DEBUG( Rcpp::Rcout << "WARNING: NIl var" << nil_var_name << " is updated to unknown type on ptr_table. Nothing is done for VEC_LIST." << std::endl;);
 			}
@@ -1156,14 +1164,23 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		IF_DEBUG( Rcpp::Rcout << "VEC_LIST is updated" << std::endl; );
 
 		// Free string objects on ptr_table
-		for(auto str_record_iter = str_records.begin(); str_record_iter != str_records.end(); ++str_record_iter){
+		IF_DEBUG( Rcpp::Rcout << "Num of str records to be cleaned : " << str_records_for_vars.size() << std::endl; );
+		for(auto str_record_iter = str_records_for_vars.begin(); str_record_iter != str_records_for_vars.end(); ++str_record_iter){
 			sailr_ptr_record_free_objects( *str_record_iter );
 		}
 
-		// reset regular expressions
-		for(auto rexp_iter = rexp_records.begin(); rexp_iter != rexp_records.end(); ++rexp_iter){
+		// Reset literal regular expressions
+		IF_DEBUG( Rcpp::Rcout << "Num of rexp literal records to be reset : " << rexp_records_for_literals.size() << std::endl; );
+		for(auto rexp_iter = rexp_records_for_literals.begin(); rexp_iter != rexp_records_for_literals.end(); ++rexp_iter){
 			sailr_ptr_record_reset_rexp( *rexp_iter );
 		}
+
+		// Free non-literal regular expressions (assigned to some vars)
+		IF_DEBUG( Rcpp::Rcout << "Num of rexp literal records to be cleaned : " << rexp_records_for_vars.size() << std::endl; );
+		for(auto rexp_iter = rexp_records_for_vars.begin(); rexp_iter != rexp_records_for_vars.end(); ++rexp_iter){
+			sailr_ptr_record_free_objects( *rexp_iter );
+		}
+
 		IF_DEBUG( Rcpp::Rcout << "Ptr_record's with type of PTR_REXP are reset." << std::endl; );
 	}
 
