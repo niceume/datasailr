@@ -4,7 +4,9 @@
 
 * Cross-platform compilation is improved.
 * The core processing library, libsailr has become able to report runtime errors with correspoding script location, and DataSailr supports it.
-* Bug fix: Variables that appear only on RHS of script crashed the program, which is fixed and the program stops safely.
+* Fixes
+    + Variables that appear only on RHS of script crashed the program, which is fixed and the program stops safely.
+    + String objects and regular expression objects were not freed in some cases. Memory leaks are fixed. 
 
 
 ## Version 0.8.3
