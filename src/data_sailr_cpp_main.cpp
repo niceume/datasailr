@@ -94,7 +94,7 @@ vec_list_add_int_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_vec, 
     cpp_type_vec = new std::vector<int> (size, DBLNUM );
   }
     
-  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_i_vec, INTSXP , size, (void*) cpp_d_vec , (void*) cpp_type_vec , NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_i_vec, INTSXP , size, (void*) cpp_d_vec , (void*) cpp_type_vec , nullptr, nullptr};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -122,7 +122,7 @@ vec_list_add_double_vec( VEC_LIST* vec_list, char* var_name, NumericVector* r_ve
   }
   std::vector<int>* cpp_i_vec = new std::vector<int> (size);
   std::vector<int>* cpp_type_vec = new std::vector<int> (size, DBLNUM );
-  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_d_vec, REALSXP , size, (void*) cpp_i_vec, (void*) cpp_type_vec, NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_d_vec, REALSXP , size, (void*) cpp_i_vec, (void*) cpp_type_vec, nullptr, nullptr};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -141,7 +141,7 @@ vec_list_add_string_vec( VEC_LIST* vec_list, char* var_name, StringVector* r_vec
   }
   std::vector<std::string* > *new_pvec_pstr = new std::vector<std::string* >(size, NULL);
   std::vector<int>* cpp_updated_vec = new std::vector<int> ( size, ORIGINAL );
-  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec, NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) pvec_pstr , STRSXP, size , (void*) new_pvec_pstr, (void*) cpp_updated_vec, nullptr, nullptr};
   vec_list->push_back( new_vec_elem );
 }
 
@@ -183,7 +183,7 @@ void
 vec_list_add_null_vec ( VEC_LIST* vec_list, char* var_name , int size)
 {
   std::vector<int>* cpp_vec = new std::vector<int>(size);
-  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_vec, NILSXP , size, NULL, NULL, NULL, NULL};
+  VEC_ELEM new_vec_elem = VEC_ELEM { strdup(var_name), (void*) cpp_vec, NILSXP , size, nullptr, nullptr, nullptr, nullptr};
   vec_list->push_back( new_vec_elem );
 }
 
