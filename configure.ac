@@ -39,6 +39,14 @@ AC_PROG_CC
 # AR & RANLIB
 AR=`"${R_HOME}/bin/R" CMD config AR`
 RANLIB=`"${R_HOME}/bin/R" CMD config RANLIB`
+pattern='ERROR*'
+case "$RANLIB" in
+    $pattern) echo 'RANLIB variable is not set on this machine by default. Setting it to "ar -s"'
+        RANLIB="ar -s"
+        ;;
+    *)  ;;
+esac
+echo $RANLIB
 
 # Make
 MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
