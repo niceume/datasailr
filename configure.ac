@@ -20,9 +20,9 @@ CXX11=`"${R_HOME}/bin/R" CMD config CXX11`
   if test -z "$CXX11"; then
   AC_MSG_ERROR([No C++11 compiler is available])
 fi
-# CXX11STD=`"${R_HOME}/bin/R" CMD config CXX11STD`
-# CXX="${CXX11} ${CXX11STD}"
-# CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXX11FLAGS`
+CXX11STD=`"${R_HOME}/bin/R" CMD config CXX11STD`
+CXX="${CXX11} ${CXX11STD}"
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXX11FLAGS`
 AC_LANG(C++)
 AC_REQUIRE_CPP
 AC_PROG_CXX
@@ -140,10 +140,26 @@ AS_IF( [test "$which_onigmo" = "USER"],
   ],
   [ AC_MSG_ERROR(["Which onigmo library to use, PACKAGE, SYSTEM or USER? "])])
 
+# Check C++ nullptr availability
+AC_MSG_CHECKING([whether C++11 nullptr is available])
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM(
+    [[  ]],
+    [[ char *str = nullptr; if(str){};]]
+  )],[
+    AC_MSG_RESULT([yes])
+  ],[
+    AC_MSG_RESULT([no])
+    needs_nullptr_support_flag='-DNEEDS_NULLPTR_SUPPORT'
+  ])
+AC_LANG_POP([C++])
+
 # Export the following shell variables as substitute variales.
 AC_SUBST([add_onigmo_include_path])
 AC_SUBST([add_onigmo_lib_path])
 AC_SUBST([add_r_include_path])
+AC_SUBST([needs_nullptr_support_flag])
 
 # create and report output
 AC_CONFIG_FILES([src/Makevars])

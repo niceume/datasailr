@@ -2,7 +2,7 @@
 # https://stackoverflow.com/questions/43597632/understanding-the-contents-of-the-makevars-file-in-r-macros-variables-r-ma
 
 CXX_STD=CXX11
-PKG_CXXFLAGS=-Ilibsailr  # CPP means c preprocessor, CXX means cpp compiler.
+PKG_CXXFLAGS=-Ilibsailr @needs_nullptr_support_flag@ # CPP means c preprocessor, CXX means cpp compiler.
 
 PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -lonigmo 
 
