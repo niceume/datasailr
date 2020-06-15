@@ -43,7 +43,7 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 	}
 
 	if( rowname_added_temporarily  ){
-		df = df[ , !( colnames(df) %in%  rowname )]
+		df = df[ !( colnames(df) %in%  rowname )]
 	}
 
 	cols_for_update = colnames(result_df) %in% ori_unique_colnames #logical
