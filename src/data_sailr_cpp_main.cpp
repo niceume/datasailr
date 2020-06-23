@@ -153,7 +153,11 @@ vec_list_add_string_vec( VEC_LIST* vec_list, char* var_name, StringVector* r_vec
     pvec_pstr = new std::vector<std::string*>(size);
     int idx;
     for(idx = 0; idx < size ; ++idx ){
-      pvec_pstr->operator[](idx) = new std::string(r_vec->operator[](idx));
+      if( ! Rcpp::StringVector::is_na(r_vec->operator[](idx))){
+        pvec_pstr->operator[](idx) = new std::string(r_vec->operator[](idx));
+      }else{
+        pvec_pstr->operator[](idx) = NULL;
+      }
     }
   }else{
     pvec_pstr = new std::vector<std::string*>(size, NULL);
@@ -186,7 +190,11 @@ vec_list_add_factor_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_ve
     pvec_pstr = new std::vector<std::string*>(size);
     int idx;
     for(idx = 0; idx < size ; ++idx ){
-      pvec_pstr->operator[](idx) = new std::string( factor_levels->operator[](r_vec->operator[](idx) - 1));
+      if( ! Rcpp::IntegerVector::is_na(r_vec->operator[](idx))){
+        pvec_pstr->operator[](idx) = new std::string( factor_levels->operator[](r_vec->operator[](idx) - 1));
+      }else{
+        pvec_pstr->operator[](idx) = NULL;
+      }
     }
   }else{
     // This branch should never be run
