@@ -622,7 +622,6 @@ update_vec_elem_with_new_type(VEC_LIST* vec_list, char* nil_var_name, char new_t
   void* vec_ori; 
   void* vec_new;
   void* vec_type;
-  VEC_ELEM new_vec_elem ;
   VEC_ELEM* added_elem ;
   std::vector<void*> new_vec_info = std::vector<void*>(3);
   
