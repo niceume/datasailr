@@ -1,5 +1,10 @@
 # HISTORY
 
+## Version 0.8.5
+
+* Minor update
+    + Warning with gcc link time optimization (on Fedora) is resolved.
+
 ## Version 0.8.4
 
 * Cross-platform compilation is improved.

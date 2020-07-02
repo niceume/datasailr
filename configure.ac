@@ -128,9 +128,23 @@ AS_IF( [test "$which_onigmo" = "USER"],
 	eval "mkdir -p ${current_path}/src/Onigmo/build"
     eval 'cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CC="${CC}" CFLAGS="${CPICFLAGS} ${CFLAGS} ${CPPFLAGS} -DUNALIGNED_WORD_ACCESS=0 " CXX="${CXX}" ARLIB="${AR}" ARDLL="${CC}" RANLIB="${RANLIB}" ; cd  ${current_path};'
     echo "${current_path}/src/Onigmo/configure is successfully executed."
-    eval '${MAKE} --directory ${current_path}/src/Onigmo/  LDFLAGS="-static"'
-    eval "${MAKE} install --directory ${current_path}/src/Onigmo/"
-    echo "${MAKE} is successfully executed."
+    case "${CFLAGS}" in
+    *flto*)
+      echo "CFLAGS(${CFLAGS}) contains flto option"
+      eval '${MAKE} --directory ${current_path}/src/Onigmo/'
+      eval "mkdir -p ${current_path}/src/Onigmo/build/lib/"
+      eval "mkdir -p ${current_path}/src/Onigmo/build/include/"
+      eval "cp ${current_path}/src/Onigmo/.libs/libonigmo.a ${current_path}/src/Onigmo/build/lib/"
+      eval "cp ${current_path}/src/Onigmo/onigmo.h ${current_path}/src/Onigmo/build/include/"
+      eval "cp ${current_path}/src/Onigmo/onigmoposix.h ${current_path}/src/Onigmo/build/include/"
+      eval "cp ${current_path}/src/Onigmo/oniguruma.h ${current_path}/src/Onigmo/build/include/"
+      ;;
+    *)
+      echo "CFLAGS(${CFLAGS}) does not contain -flto option"
+      eval '${MAKE} --directory ${current_path}/src/Onigmo/  LDFLAGS="-static"'
+      eval "${MAKE} install --directory ${current_path}/src/Onigmo/"
+      ;;
+    esac
 	echo "only static library is generated."
   else
     AC_MSG_ERROR("${current_path}/src/Onigmo/configure is not found in this package.")
