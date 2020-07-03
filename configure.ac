@@ -1,7 +1,7 @@
 # autoconf setting 
 
 AC_PREREQ([2.69])
-AC_INIT([datasailr], 0.8.3, toshi@niceume.com)
+AC_INIT([datasailr], 0.8.5, toshi@niceume.com)
 AC_CONFIG_SRCDIR([src/Makevars.in])
 
 # Check R_HOME
@@ -17,7 +17,7 @@ add_r_include_path="-I${r_include_path} "
 
 # C++
 CXX11=`"${R_HOME}/bin/R" CMD config CXX11`
-  if test -z "$CXX11"; then
+if test -z "$CXX11"; then
   AC_MSG_ERROR([No C++11 compiler is available])
 fi
 CXX11STD=`"${R_HOME}/bin/R" CMD config CXX11STD`
@@ -40,13 +40,22 @@ AC_PROG_CC
 AR=`"${R_HOME}/bin/R" CMD config AR`
 RANLIB=`"${R_HOME}/bin/R" CMD config RANLIB`
 pattern='ERROR*'
+case "$AR" in
+    $pattern) echo 'AR variable is not set on this machine by default.'
+        echo 'Setting it to "ar"'
+        AR="ar"
+        ;;
+    *)  ;;
+esac
 case "$RANLIB" in
     $pattern) echo 'RANLIB variable is not set on this machine by default. Setting it to "ar -s"'
         RANLIB="ar -s"
         ;;
     *)  ;;
 esac
-echo $RANLIB
+
+echo "AR is set to ${AR}"
+echo "RANLIB is set to ${RANLIB}"
 
 # Make
 MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
@@ -126,7 +135,7 @@ AS_IF( [test "$which_onigmo" = "USER"],
   fi
   if test -f "${current_path}/src/Onigmo/configure" ; then
 	eval "mkdir -p ${current_path}/src/Onigmo/build"
-    eval 'cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CC="${CC}" CFLAGS="${CPICFLAGS} ${CFLAGS} ${CPPFLAGS} -DUNALIGNED_WORD_ACCESS=0 " CXX="${CXX}" ARLIB="${AR}" ARDLL="${CC}" RANLIB="${RANLIB}" ; cd  ${current_path};'
+    eval 'cd ${current_path}/src/Onigmo/; ./configure --prefix=${current_path}/src/Onigmo/build CC="${CC}" CFLAGS="${CPICFLAGS} ${CFLAGS} ${CPPFLAGS} -DUNALIGNED_WORD_ACCESS=0 " CXX="${CXX}" AR="${AR}" ARLIB="${AR}" ARDLL="${CC}" RANLIB="${RANLIB}" ; cd  ${current_path};'
     echo "${current_path}/src/Onigmo/configure is successfully executed."
     case "${CFLAGS}" in
     *flto*)
