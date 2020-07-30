@@ -1,5 +1,6 @@
 extern "C" {
 	#include "sailr.h"
+	#include "sailr_ext.h"
 }
 
 #include <fstream>
@@ -1127,7 +1128,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		IF_DEBUG( if(row_idx == 0){ Rcpp::Rcout << "Virtual machine is generated for processing the first row." << std::flush;} );
 
 		update_sailr_ptr_table( table, var_array, var_num, vec_list, row_idx );	
-		if( sailr_vm_exec_code(vmcode, vmcode_size , table , vmstack) != 1 ){
+		if( sailr_vm_exec_code(vmcode, vmcode_size , table , vmstack, NULL) != 1 ){
 			vm_exec_success = false;  // Runtime error
 			goto finalize;
 		}

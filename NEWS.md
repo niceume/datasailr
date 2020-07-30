@@ -1,5 +1,10 @@
 # HISTORY
 
+## Version 0.8.6
+
+* Update to follow libsailr's external function availability.
+
+
 ## Version 0.8.5
 
 * Minor update

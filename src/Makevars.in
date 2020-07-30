@@ -1,13 +1,14 @@
 # https://github.com/molpopgen/devnotes/wiki/Rcpp-and-compiler-flags
 # https://stackoverflow.com/questions/43597632/understanding-the-contents-of-the-makevars-file-in-r-macros-variables-r-ma
 
+@add_onigmo_include_path@ #This defines the path, $(ONIG_INCLUDE_DIR)
+
 CXX_STD=CXX11
-PKG_CXXFLAGS=-Ilibsailr @needs_nullptr_support_flag@ # CPP means c preprocessor, CXX means cpp compiler.
+PKG_CXXFLAGS=-Ilibsailr -I$(ONIG_INCLUDE_DIR) @needs_nullptr_support_flag@ # CPP means c preprocessor, CXX means cpp compiler.
 
 PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -lonigmo 
 
-@add_onigmo_include_path@ #This defines the path, $(ONIG_INCLUDE_DIR)
-LIBSAILR_CFLAGS=$(CFLAGS) $(CPICFLAGS) -I. -Ivm -Istring -Isimple_re -Isimple_date -I$(ONIG_INCLUDE_DIR)
+LIBSAILR_CFLAGS=$(CFLAGS) $(CPICFLAGS) -I. -I$(ONIG_INCLUDE_DIR)
 LIBSAILR_CXXFLAGS=$(CXXFLAGS) $(CPICFLAGS) -Ivm -Istring
 
 
