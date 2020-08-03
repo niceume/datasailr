@@ -14,6 +14,8 @@ PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr -L$(ONIGMO_LIB) -l:libonigmo.a -Wl,-Bst
 # Note: -l:libyyy.a directly looks up for the library with the filename of libyyy.a
 # https://stackoverflow.com/questions/6578484/telling-gcc-directly-to-link-a-library-statically
 
+PKG_CFLAGS=-Ilibsailr -I$(ONIGMO_PROJ_NAME) @add_r_include_path@ 
+
 REQUIRE_AUTOTOOLS=NO
 src_dir=$(strip $(shell pwd))
 

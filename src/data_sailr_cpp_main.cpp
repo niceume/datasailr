@@ -2,6 +2,8 @@ extern "C" {
 	#include "sailr.h"
 	#include "sailr_ext.h"
 }
+#include "datasailr_ext_func.hpp"
+
 
 #include <fstream>
 #include <iostream>
@@ -76,6 +78,7 @@ void vec_list_add_int_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_
 void vec_list_add_double_vec( VEC_LIST* vec_list, char* var_name, NumericVector* r_vec , int size);
 void vec_list_add_string_vec( VEC_LIST* vec_list, char* var_name, StringVector* r_vec , int size);
 VEC_LIST* ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, int* conversion_error );
+int vec_list_nrows(VEC_LIST* vec_list);
 VEC_ELEM* vec_elem_find(VEC_LIST* vl, char* var_name);
 bool   cstring_exists_in_charactervector(char* var_name, CharacterVector var_vector);
 SXPTYPE  vec_elem_type_of(VEC_ELEM* vec_elem);
@@ -506,10 +509,10 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
         }else if(updated_vec[idx] == ORIGINAL){
 //          rstrvec.push_back(*(strvec_ori[idx])) ; // Too inefficient => Deleted.
 		  if(strvec_ori[idx] == NULL){
-            IF_DEBUG( printf("%d : (ORIGINAL) Address: %p ", idx, strvec[idx] ); );
+            IF_DEBUG( printf("%d : (ORIGINAL) NULL", idx); );
 		    // Nothing to be assigned. The default element value of StringVector is ""
 		  }else{
-            IF_DEBUG( printf("%d : (ORIGINAL) Address: %p , Value: ", idx, strvec[idx]); Rcpp::Rcout << *(strvec[idx]) << std::endl; );
+            IF_DEBUG( printf("%d : (ORIGINAL) Address: %p , Value: ", idx, strvec_ori[idx]); Rcpp::Rcout << *(strvec_ori[idx]) << std::endl; );
 			rstrvec[idx] = *(strvec_ori[idx]);
 		  }
         }else{
@@ -529,6 +532,98 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
 
   Rcpp::DataFrame new_df_out = Rcpp::DataFrame::create(new_df, _["stringsAsFactors"] = false);  // This step is required to output proper data.frame. Also, stringsAsFactors attribute is required to be dataframe.
   return new_df_out;
+}
+
+int
+vec_list_push_cloned_row(VEC_LIST* vl, int from_idx)
+{
+  // To access Tuple elemnet
+  void* column_vec1;
+  void* column_vec2;
+  void* column_vec3;
+
+  // For integer & double columns
+  std::vector<int> *intvec;
+  std::vector<double> *dblvec;
+  std::vector<int> *typevec;
+
+  // For string column
+  std::vector<std::string* > *strvec;
+  std::vector<std::string* > *strvec_ori;
+  std::vector<int> *updated_vec;
+  std::string* temp_str;
+
+  // For null column
+  std::vector<int>* nullvec;
+  
+  for(auto it = vl->begin(); it != vl->end(); ++it ){
+    switch( std::get<2>(*it)){
+    case INTSXP:
+      IF_DEBUG( Rcpp::Rcout << "Exteniding integer vector (" << ((char*) std::get<0>(*it)) << ")"  << std::endl; );
+      column_vec1 = std::get<1>(*it);
+      intvec = ((std::vector<int>*)column_vec1);
+      column_vec2 = std::get<4>(*it);
+      dblvec = ((std::vector<double>*)column_vec2);
+      column_vec3 = std::get<5>(*it);
+      typevec = ((std::vector<int>*)column_vec3);
+
+      intvec->push_back(intvec->operator[](from_idx));
+      dblvec->push_back(dblvec->operator[](from_idx));
+      typevec->push_back(typevec->operator[](from_idx));
+
+      std::get<3>(*it) = std::get<3>(*it) + 1; // increment size.
+      break;
+    case REALSXP:
+      IF_DEBUG( Rcpp::Rcout << "Exteniding doubler vector (" << ((char*) std::get<0>(*it)) << ")"  << std::endl; );
+      column_vec1 = std::get<1>(*it);
+      dblvec = ((std::vector<double>*)column_vec1);
+      column_vec2 = std::get<4>(*it);
+      intvec = ((std::vector<int>*)column_vec2);
+      column_vec3 = std::get<5>(*it);
+      typevec = ((std::vector<int>*)column_vec3);
+
+      dblvec->push_back(dblvec->operator[](from_idx));
+      intvec->push_back(intvec->operator[](from_idx));
+      typevec->push_back(typevec->operator[](from_idx));
+
+      std::get<3>(*it) = std::get<3>(*it) + 1; // increment size.
+      break;
+    case STRSXP:
+      IF_DEBUG( Rcpp::Rcout << "Exteniding string vector (" << ((char*) std::get<0>(*it)) << ")"  << std::endl; );
+      
+      column_vec1 = std::get<1>(*it);
+      strvec_ori = (std::vector<std::string* >*)column_vec1;
+      column_vec2 = std::get<4>(*it);
+      strvec = (std::vector<std::string* >*)column_vec2;
+      column_vec3 = std::get<5>(*it);
+      updated_vec = (std::vector<int>*)column_vec3;
+
+      if(updated_vec->operator[](from_idx) == UPDATED){
+        temp_str = (std::string*) strvec->operator[](from_idx);
+        strvec_ori->push_back(new std::string(*temp_str));
+      }else{
+        if( strvec->operator[](from_idx) != NULL){
+          temp_str = (std::string*) strvec->operator[](from_idx);
+          strvec_ori->push_back(new std::string(*temp_str));
+        }else{
+          strvec_ori->push_back(NULL);
+        }
+      }
+      strvec->push_back(NULL);
+      updated_vec->push_back(ORIGINAL);
+
+      std::get<3>(*it) = std::get<3>(*it) + 1; // increment size.
+      break;
+    case NILSXP:
+      nullvec->push_back(0);
+
+      std::get<3>(*it) = std::get<3>(*it) + 1; // increment size.
+      break;
+    default:
+      break;
+    }
+  }
+  return (vec_list_nrows(vl) - 1); // Index for the last row (= size - 1)
 }
 
 void
@@ -1110,25 +1205,57 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	
 	// Variable for virtual machine
 	vm_stack_object* vmstack;
+
+	// External Functions
+	ext_func_hash_object* extfunchash; 
+	extfunchash = sailr_ext_func_hash_init();
+	sailr_ext_func_hash_add( &extfunchash, "push!", 0, &sailr_external_push_row );
+	sailr_ext_func_hash_add( &extfunchash, "MYPRINTLN", 1, &sailr_external_println );
 	
 	// Execute code 
 	IF_DEBUG( Rcpp::Rcout << "VM code is to be executed on Virtual machine" << std::endl; );
 	
 	int row_idx ;
+	int ori_row_idx;
+	int pushed_row_idx;
 	int num_of_rows = vec_list_nrows(vec_list) ;
 	char new_type;
 	std::vector<void*> new_vec_info;
 	void** new_ptr;
+	int vm_exec_code_result = 1; // success
 	bool vm_exec_success = true;
 
 	IF_DEBUG( Rcpp::Rcout << "Calculation started. (" << "Num of rows to be processed: " << num_of_rows << ")" << std::endl; );
 
-	for( row_idx = 0 ; row_idx < num_of_rows ; ++row_idx){  // Conduct for each row of dataframe.
-		vmstack = sailr_vm_stack_init();
-		IF_DEBUG( if(row_idx == 0){ Rcpp::Rcout << "Virtual machine is generated for processing the first row." << std::flush;} );
+	for( ori_row_idx = 0 ; ori_row_idx < num_of_rows ; ++ori_row_idx){  // Conduct for each row of dataframe.
 
-		update_sailr_ptr_table( table, var_array, var_num, vec_list, row_idx );	
-		if( sailr_vm_exec_code(vmcode, vmcode_size , table , vmstack, NULL) != 1 ){
+		loop_when_suspended: ;
+
+		if( vm_exec_code_result ==  1){ // if previously success
+			row_idx = ori_row_idx;
+			vmstack = sailr_vm_stack_init(); // In this case, vm stack must have been freed, and should be created newly.
+		} else if( vm_exec_code_result == 2){ // if previously suspended
+			if( extfunchash != NULL && ( strcmp( sailr_ext_func_hash_get_last_executed(&extfunchash), "push!") == 0 )){
+				row_idx = pushed_row_idx;  // Result needs to be pushed to a new row.
+			}
+		}
+		IF_DEBUG( if(row_idx == 0){ Rcpp::Rcout << "Virtual machine is generated for processing the first row.\n" << std::flush;} );
+
+		if( extfunchash != NULL){
+			sailr_ext_func_hash_reset_last_executed( &extfunchash );
+		}
+
+		update_sailr_ptr_table( table, var_array, var_num, vec_list, row_idx );
+		IF_DEBUG( if(row_idx == 0){  Rcpp::Rcout << "ptr_table is updated.\n" << std::flush;}) ;
+
+		if( vm_exec_code_result ==  1){ // if previously success
+			vm_exec_code_result = sailr_vm_exec_code(vmcode, vmcode_size , table , vmstack, extfunchash);
+		} else if( vm_exec_code_result == 2 ){ // if previously suspended
+			vm_exec_code_result = sailr_vm_resume_code(vmcode, vmcode_size , sailr_vm_stack_get_code_position(vmstack), table , vmstack, extfunchash);
+		}
+		IF_DEBUG( Rcpp::Rcout << "VM code execution is finished (vm_exec_code_result: " << vm_exec_code_result << ")\n" << std::flush; );
+
+		if( vm_exec_code_result == 0 ){
 			vm_exec_success = false;  // Runtime error
 			goto finalize;
 		}
@@ -1190,6 +1317,15 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		IF_DEBUG( show_sailr_vec_list_nth(vec_list, row_idx ); );
 		IF_DEBUG( Rcpp::Rcout << "VEC_LIST is updated" << std::endl; );
 
+		if( vm_exec_code_result == 2 ){ // if suspended
+			if( extfunchash != NULL && ( strcmp( sailr_ext_func_hash_get_last_executed(&extfunchash), "push!") == 0 )){
+				// Push new row to DF & set the row number to pushed_row_idx
+				pushed_row_idx = vec_list_push_cloned_row(vec_list, row_idx);
+				IF_DEBUG( Rcpp::Rcout << "Copying row from " << row_idx << " to " << pushed_row_idx << std::endl; );
+				goto loop_when_suspended;
+			}
+		}
+
 		// Free string objects on ptr_table
 		IF_DEBUG( Rcpp::Rcout << "Num of str records to be cleaned : " << str_records_for_vars.size() << std::endl; );
 		for(auto str_record_iter = str_records_for_vars.begin(); str_record_iter != str_records_for_vars.end(); ++str_record_iter){
@@ -1225,6 +1361,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 
 	/* Convert VEC_LIST* to DataFrame. */
 	IF_DEBUG( Rcpp::Rcout << "Convert vec_list to Rcpp::DataFrame" << std::endl; );
+	IF_DEBUG( Rcpp::Rcout << "vm_exec_success code: " << vm_exec_success << std::endl; );
 	DataFrame new_df;
 	if(vm_exec_success){
 		new_df = ConvertVecList(vec_list, lhs_vars);
@@ -1251,6 +1388,9 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 
 	IF_DEBUG( Rcpp::Rcout << "Free parser state object" << std::endl; );
 	sailr_parser_state_free(ps);
+
+	/* Free external function hash */
+	sailr_ext_func_hash_free(&extfunchash);
 
 	/* Free VEC_LIST */
 	vec_list_free(vec_list);

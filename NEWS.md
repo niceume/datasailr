@@ -3,6 +3,12 @@
 ## Version 0.8.6
 
 * Update to follow libsailr's external function availability.
+* push!() function is implemented as libsailr's external function.
+    + It is implemented as an external function, because it does more than just row level calculation. Libsailr cannot handle this, but at DataSair level, new rows can be added.
+    + The function name, push!, comes from two reasons.
+        + It is important to clarify that this function is different from Sailr original. This function works more than within each row level. Therefore it has ! at the end.
+        + This function does not stop but suspends libsailr vm execution, and adds or pushes rows. Therefore it is named as push.
+    + The common usage of this function is converting data of wide format into long format. In such a case, not all the columns need to be kept. Therefore, the fullData option is changed to be set FALSE.
 
 
 ## Version 0.8.5

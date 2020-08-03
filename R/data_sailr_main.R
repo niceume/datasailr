@@ -31,10 +31,17 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 		min(which(matched_positions==TRUE ))
 	}, USE.NAMES = TRUE )
 
-
 	df_wo_duplicated_colnames = df[ positions_used_for_each_colname ]
+	ori_nrow = nrow(df_wo_duplicated_colnames)
 
 	result = .data_sailr_cpp_execute( code, df_wo_duplicated_colnames)
+	result_nrow = nrow(result)
+	if(ori_nrow != result_nrow ){
+		if(fullData == TRUE){
+			cat(sprintf("The dataframe row size is extend (%d=>%d). fullData option is changed to FALSE automatically.\n", ori_nrow , result_nrow))
+			fullData = FALSE
+		}
+	}
 
 	if(stringsAsFactors == TRUE ){
 		result_df = data.frame( lapply(result, function(x) if (is.factor(x)) as.character(x) else {x} ), stringsAsFactors = TRUE )  # Deal strings as factors
