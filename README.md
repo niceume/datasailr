@@ -16,18 +16,38 @@ A famous R package, dplyr, has been improving the same kind of points. It enable
 
 ## How to install
 
+### CRAN
+
+DataSailr package is available on CRAN.
+
+```
+# Start R interpreter
+install.packages("datasailr")
+```
+
+
 ### Binaries
 
-Binaries are provided at "http://datasailr.io/download"
-
-Especially for windows users, it is recommended to install from binary package.
+Binaries are provided at "https://datasailr.io/download"
 
 
 ### Install from source
 
-* Linux(ubuntu)
+For compilation, autotools, bison, flex and some other UNIX programs are required.
 
-For compilation, autotools, bison, flex and some other UNIX programs are required. 
+DataSailr_toolchain repository provides a way to create CRAN package, and to install it. CRAN package requires some rules. For example, std::cout is not used, but Rcpp::Rcout needs to be used. Also, DataSailr repository itself does not include libsailr and Onigmo. When including those libraries for CRAN package, additional copy right holders need to be listed in DESCRIPTION file. If you do not need these modifications, installing from DataSailr repository itself is also an acceptable way..
+
+
+* Install from datasailr_toolchain repository
+
+```
+git clone https://github.com/niceume/datasailr_toolchain.git
+cd datasailr_toolchain
+./create_datasailr_pkg.sh
+./create_packages.sh
+```
+
+* Install from datasailr repository
 
 ```
 git clone <datasailr repository>
@@ -39,7 +59,6 @@ cd ..
 
 R CMD INSTALL datasailr --preclean --no-multiarch --build
 ```
-
 
 
 ## How to run Sailr script
@@ -462,6 +481,76 @@ date_add_n_years( unix_date, years )
 date_add_n_months( unix_date, months )
 date_add_n_days( unix_date, days )
 date_format( unix_date, str_format )  // This format should follow C++'s std::chrono::format. "%m/%d/%y" or "%Y-%m-%d" is popular.
+```
+
+### DataSailr extension for Sailr script
+
+In addition to Sailr built-in functions, DataSailr extended functions can also be used. DataSailr extended functions are implemented using libsailr external function mechanism.
+
+* push!() function
+
+push!() function changes dataframe structure, for which reason it is not (cannot be) built-in Sailr function. What push!() function does is to push the current variable values onto the result dataframe. Even after push!() function is executed, the script execution continues on the same input row. This results in creating multiple rows from one input row.
+
+As the following example shows, it is useful to convert wide format dataframe into long format.
+
+```
+wide_df = data.frame(
+  subj = c("Tom", "Mary", "Jack"),
+  t0 = c( 50, 42, 80),
+  t1 = c( 48, 42, 75),
+  t2 = c( 46, 44, 72),
+  t3 = c( 42, 42, 73)
+)
+
+code = "
+  OriRowNum = _n_
+  subj = subj
+
+  time = 0
+  bw = t0
+  push!()
+
+  time = 1
+  bw = t1 
+  push!()
+
+  time = 2
+  bw = t2
+  push!()
+
+  time = 3
+  bw = t3
+"
+
+wide_df
+
+datasailr::sail(wide_df , code = code)
+```
+
+
+```
+> wide_df
+
+  subj t0 t1 t2 t3
+1  Tom 50 48 46 42
+2 Mary 42 42 44 42
+3 Jack 80 75 72 73
+
+> datasailr::sail(wide_df , code = code)
+
+   subj OriRowNum time bw
+1  Tom          1    0 50
+2  Tom          1    1 48
+3  Tom          1    2 46
+4  Tom          1    3 42
+5  Mary         2    0 42
+6  Mary         2    1 42
+7  Mary         2    2 44
+8  Mary         2    3 42
+9  Jack         3    0 80
+10 Jack         3    1 75
+11 Jack         3    2 72
+12 Jack         3    3 73
 ```
 
 

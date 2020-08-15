@@ -10,6 +10,7 @@ extern "C" {
 #include <string>
 #include <iterator>
 #include <tuple>
+#include <cstring>
 
 #include "stdlib.h"
 #include "stdio.h"
@@ -77,9 +78,11 @@ typedef std::vector< VEC_ELEM > VEC_LIST;
 void vec_list_add_int_vec( VEC_LIST* vec_list, char* var_name, IntegerVector* r_vec , int size);
 void vec_list_add_double_vec( VEC_LIST* vec_list, char* var_name, NumericVector* r_vec , int size);
 void vec_list_add_string_vec( VEC_LIST* vec_list, char* var_name, StringVector* r_vec , int size);
-VEC_LIST* ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, int* conversion_error );
+VEC_LIST* ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_var_names, int num_of_lhs_vars, char** srv_var_names, int num_of_srv_vars, int* conversion_error);
+
+
 int vec_list_nrows(VEC_LIST* vec_list);
-VEC_ELEM* vec_elem_find(VEC_LIST* vl, char* var_name);
+VEC_ELEM* vec_elem_find(VEC_LIST* vl, const char* var_name);
 bool   cstring_exists_in_charactervector(char* var_name, CharacterVector var_vector);
 SXPTYPE  vec_elem_type_of(VEC_ELEM* vec_elem);
 char* vec_elem_name_of(VEC_ELEM* vec_elem);
@@ -298,15 +301,50 @@ vec_list_free( VEC_LIST* vl){
 	delete vl;
 }
 
+bool
+cstring_exists_in_pchar_array(const char* cstring, char** array, int from_idx, int to_idx)
+{
+  int idx;
+  char* current_cstring;
+  for( idx = from_idx; idx <= to_idx; ++idx){
+    current_cstring = array[idx];
+    if( 0 == std::strcmp(cstring, current_cstring) ){
+      return true;
+    }
+  }
+  return false;
+}
 
 VEC_LIST*
-ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_var_names, int num_of_lhs_vars, int* conversion_error)
+ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_var_names, int num_of_lhs_vars, char** srv_var_names, int num_of_srv_vars, int* conversion_error)
 {
+  // all_vars store var_names + srv_var_names
+  IF_DEBUG(Rcpp::Rcout << "all_vars = all the variable names that appear in souce + spceial variables. " << std::endl; );
+  int num_of_all_vars = num_of_vars + num_of_srv_vars;
+  char** all_vars = (char**) malloc(sizeof(char*) * num_of_all_vars);
+  int all_var_idx = 0;
+  while(all_var_idx < num_of_vars ){
+    all_vars[all_var_idx] = var_names[all_var_idx];
+    ++all_var_idx;
+  }
+  int srv_var_idx = 0;
+  while(srv_var_idx < num_of_srv_vars){
+    if(! cstring_exists_in_pchar_array( srv_var_names[srv_var_idx] , all_vars, 0, num_of_vars - 1)){
+      all_vars[all_var_idx] =  srv_var_names[srv_var_idx];
+    }else{
+      all_vars[all_var_idx] =  NULL;
+    }
+    ++all_var_idx;
+    ++srv_var_idx;
+  }
+
+  // Convert DataFrame columns into VEC_LIST vector elements.
   char* var_name;
   int var_idx;
   VEC_LIST* vec_list = new VEC_LIST;
   CharacterVector df_var_vector = df.attr("names") ;
   CharacterVector lhs_var_vector;
+  CharacterVector srv_var_vector;
   int lhs_var_idx;
   for( lhs_var_idx = 0; lhs_var_idx < num_of_lhs_vars; ++lhs_var_idx){
     lhs_var_vector.push_back( lhs_var_names[lhs_var_idx]); 
@@ -316,13 +354,17 @@ ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_
   IF_DEBUG( Rcpp::Rcout << "Dataframe variable names: " << std::endl ; );
   IF_DEBUG( Rcpp::Rcout << df_var_vector << std::endl ; );
 
-  // All the variable names in source (= LHS U RHS)
-  IF_DEBUG( Rcpp::Rcout << "All the variable names in source: " << std::endl ; );
+  // All the variable names in source (= LHS U RHS) + service variables (which should be always included from dataframe)
+  IF_DEBUG( Rcpp::Rcout << "All the variable names in source + service variable names (which should be always included from dataframe): " << std::endl ; );
   // IF_DEBUG( show each char* in var_names );
 
   // foreach var_name (= All the variable names appear in source code.)
-  for( var_idx = 0 ; var_idx < num_of_vars; ++var_idx ){
-    var_name = var_names[var_idx] ;
+  for( var_idx = 0 ; var_idx < num_of_all_vars; ++var_idx ){
+      var_name = all_vars[var_idx] ;
+    if( var_name == NULL ){
+      IF_DEBUG( Rcpp::Rcout << "SKIP (service name already exists in source, and corresponding vector is included in VEC_LIST.)." << std::endl; ); 
+      goto SKIP_ADD_NEW_VEC;
+    };
 
     // Even if the DataFrame does not have the variable name
     // , and the variable exist on LHS
@@ -339,7 +381,7 @@ ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_
 		}
     }else{
 		// This branch means the var_name exists in dataframe.
-		IF_DEBUG( Rcpp::Rcout << "\"" << var_name << "\"" << " exists in dataframe column name (=type known) and also appears as variables (LHS or RHS)." ; );
+		IF_DEBUG( Rcpp::Rcout << "\"" << var_name << "\"" << " exists in dataframe column name (=type known) and also appears as variables (LHS or RHS) or as service variables." ; );
 
     	// Rcpp:GenericVector col_vec = df[var_name];    
 		IntegerVector int_vec;
@@ -349,11 +391,17 @@ ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_
 		StringVector r_attr_class;
 		std::string r_class_name;
 
+		IF_DEBUG( Rcpp::Rcout << "Type: " << TYPEOF(df[var_name]) << std::endl ;  );
 		switch( TYPEOF(df[var_name]) ){
 		case INTSXP:
 			int_vec = df[var_name];
-			r_attr_class = int_vec.attr("class");
-			r_class_name = (std::string) r_attr_class[0];
+			if(int_vec.hasAttribute("class")){
+				r_attr_class = int_vec.attr("class");
+				r_class_name = (std::string) r_attr_class[0];
+			}else{
+				r_class_name = std::string("");
+			}
+			IF_DEBUG(Rcpp::Rcout << "class attribute is " << r_class_name << std::endl; );
 			if( r_class_name.compare( "factor") != 0 ){  // Normal IntegerVector
 				vec_list_add_int_vec ( vec_list, var_name, &int_vec , int_vec.size());
 				IF_DEBUG( Rcpp::Rcout << "Added to VEC_LIST as int vector" << std::endl; );
@@ -377,25 +425,67 @@ ConvertDataFrame( DataFrame df , char** var_names , int num_of_vars, char** lhs_
 			break;
 		}
 	}
+    SKIP_ADD_NEW_VEC: ;
   }
+  IF_DEBUG( Rcpp::Rcout << "DataFrame is converted." << std::endl; );
+  free(all_vars);
   return vec_list;
 }	
 
+IntegerVector
+reorder_intvec(IntegerVector vec, IntegerVector order)
+{
+    return vec[order];
+}
+NumericVector
+reorder_dblvec(NumericVector vec, IntegerVector order)
+{
+    return vec[order];
+}
+StringVector
+reorder_strvec(StringVector vec, IntegerVector order)
+{
+    return vec[order];
+}
+#define REORDER_INTVEC( ori_vec, order_vec) do{ if( ! IntegerVector::is_na(order_vec[0]) ){ ori_vec = reorder_intvec(ori_vec, order_vec); } }while(0)
+#define REORDER_DBLVEC( ori_vec, order_vec) do{ if( ! IntegerVector::is_na(order_vec[0]) ){ ori_vec = reorder_dblvec(ori_vec, order_vec); } }while(0)
+#define REORDER_STRVEC( ori_vec, order_vec) do{ if( ! IntegerVector::is_na(order_vec[0]) ){ ori_vec = reorder_strvec(ori_vec, order_vec); } }while(0)
+
+// #define REORDER_INTVEC( ori_vec, order_vec) do{if(order_vec == R_NilValue){Rcpp::Rcout << "REORDER_INTVEC" << std::endl;}}while(0)
+// #define REORDER_DBLVEC( ori_vec, order_vec) do{if(order_vec == R_NilValue){Rcpp::Rcout << "REORDER_DBLVEC" << std::endl;}}while(0)
+// #define REORDER_STRVEC( ori_vec, order_vec) do{if(order_vec == R_NilValue){Rcpp::Rcout << "REORDER_STRVEC" << std::endl;}}while(0)
+
 DataFrame
-ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
+ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars, std::vector<int>* order, std::vector<std::string> vars_excluded)
 {
   DataFrame new_df;
   CharacterVector name_vec;
   std::vector<std::string> var_name_list;
   char* var_name;
+  std::string cpp_var_name;
+  
   void* column_vec1;
   void* column_vec2;
   void* column_vec3;
-  
+
+  IF_DEBUG(Rcpp::Rcout << "Start Convert VEC_LIST. " << std::endl;);
+
+  IntegerVector rcpp_one_indexed_order;
+  IntegerVector rcpp_order;
+  if(order != NULL){
+      rcpp_one_indexed_order = Rcpp::wrap(*order);
+      rcpp_order = rcpp_one_indexed_order ;
+  }else{
+      rcpp_order = IntegerVector::create(NA_INTEGER);
+  }
+
+  IF_DEBUG(Rcpp::Rcout << "R_NilValue is set. " << std::endl;);
+
   IntegerVector intvec;
   NumericVector dblvec;
   IntegerVector typevec;
   NumericVector numvec;
+  IntegerVector new_intvec;
   
   std::vector<std::string* > strvec;
   std::vector<std::string* > strvec_ori;
@@ -409,15 +499,16 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
   
   for(auto it = vl->begin(); it != vl->end(); ++it ){
     var_name = std::get<0>(*it);
+    cpp_var_name = std::string(var_name);
 
-    for(auto it_lvar = lvars.begin(); it_lvar != lvars.end(); ++it_lvar){
-      std::string lvar = *it_lvar;
-      const char* c_lvar = lvar.c_str();
-      
-      if (strcmp(var_name, c_lvar) == 0){ // Match: 0, Non-match: non-zero
+    if (std::find(lvars.begin(), lvars.end(), cpp_var_name) != lvars.end()){ // Varible name is included in lvars
+      if(std::find(vars_excluded.begin(), vars_excluded.end(), cpp_var_name) == vars_excluded.end()){ // Variable name is not included in vars_excluded
+	  IF_DEBUG( Rcpp::Rcout << "VEC_LIST column " << cpp_var_name << " : going to be converted" << std::endl;  );
         goto MATCH;
       }
-    } 
+    }
+    IF_DEBUG( Rcpp::Rcout << "VEC_LIST column " << cpp_var_name << " : conversion is skipped" << std::endl;  );
+ 
     continue;  // if the flow is not MATCH, go to next loop.
     
     MATCH: switch( std::get<2>(*it)){
@@ -433,10 +524,13 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
       typevec = Rcpp::wrap( *((std::vector<int>*)column_vec3));  
       dbl_pos = (typevec == DBLNUM);
       if(is_false(any(dbl_pos))){
-        new_df.push_back(intvec,var_name);
+        REORDER_INTVEC( intvec, rcpp_order);
+        new_df.push_back(intvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else if(all(is_na(ifelse(dbl_pos, dblvec, NA_REAL)))){ // All the DBLNUM positions have na/nan/-nan. Return intvec.
-        new_df.push_back(ifelse(!dbl_pos, intvec, NA_INTEGER), var_name);
+        new_intvec = ifelse(!dbl_pos, intvec, NA_INTEGER);
+        REORDER_INTVEC(new_intvec, rcpp_order);
+        new_df.push_back(new_intvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else{
         for( index = 0 ; index < typevec.size() ; ++index ){
@@ -451,6 +545,7 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
             Rcpp::Rcout << "ERROR: type_vec should have INTNUM or DBLNUM" << std::endl;
           }
         }
+        REORDER_DBLVEC(dblvec, rcpp_order);
         new_df.push_back(dblvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "numeric(=double) vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }
@@ -467,10 +562,13 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
       typevec = Rcpp::wrap( *((std::vector<int>*)column_vec3));
       dbl_pos = (typevec == DBLNUM);
       if(is_false(any(dbl_pos))){
+        REORDER_INTVEC(intvec, rcpp_order);
         new_df.push_back(intvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else if(all(is_na(ifelse(dbl_pos, dblvec, NA_REAL)))){ // All the DBLNUM positions have na/nan/-nan. Return intvec.
-        new_df.push_back(ifelse(!dbl_pos, intvec, NA_INTEGER), var_name);
+        new_intvec = ifelse(!dbl_pos, intvec, NA_INTEGER);
+        REORDER_INTVEC(new_intvec, rcpp_order);
+        new_df.push_back(new_intvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "integer vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }else{
         for( index = 0 ; index < typevec.size() ; ++index ){
@@ -485,6 +583,7 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
             Rcpp::Rcout << "ERROR: type_vec should have INTNUM or DBLNUM" << std::endl;
           }
         }
+        REORDER_DBLVEC(dblvec, rcpp_order);
         new_df.push_back(dblvec, var_name);
         IF_DEBUG( Rcpp::Rcout << "numeric(=double) vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       }
@@ -519,6 +618,7 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
             IF_DEBUG( Rcpp::Rcout << "ERROR: type_vec should have UPDATED or ORIGINAL. TYPE ID: " << updated_vec[idx] << std::endl; );
           }
       }
+      REORDER_STRVEC(rstrvec, rcpp_order);
       new_df.push_back(rstrvec, var_name);
       IF_DEBUG( Rcpp::Rcout << "character(=string) vector (" << var_name << ")"  << " is added to R Dataframe" << std::endl; );
       break;
@@ -530,7 +630,16 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars)
   }
 //  new_df.attr("names") = name_vec; // Previsouly used. Now, column name is added with push_back method.
 
+  IF_DEBUG( Rcpp::Rcout << "Column names just after converting VEC_LIST to Rcpp vectors :" ; );
+  IF_DEBUG( Rcpp::CharacterVector colname_vec = new_df.names(); for(const auto& iter : colname_vec){ Rcpp::Rcout << iter << " "; }; Rcpp::Rcout << std::endl; );
+  
   Rcpp::DataFrame new_df_out = Rcpp::DataFrame::create(new_df, _["stringsAsFactors"] = false);  // This step is required to output proper data.frame. Also, stringsAsFactors attribute is required to be dataframe.
+  if(order != NULL){ // This DataFrame is sorted.
+      new_df_out.attr("DataSailrSorted") = Rcpp::LogicalVector::create(1);
+  }
+  IF_DEBUG( Rcpp::Rcout << "Column names after converting to DataFrame: " ; );
+  IF_DEBUG( Rcpp::CharacterVector colname_vec2 = new_df_out.names(); for(const auto& iter : colname_vec2){ Rcpp::Rcout << iter << " "; }; Rcpp::Rcout << std::endl; );
+
   return new_df_out;
 }
 
@@ -776,7 +885,7 @@ update_vec_elem_with_new_type(VEC_LIST* vec_list, char* nil_var_name, char new_t
 
 
 VEC_ELEM*
-vec_elem_find(VEC_LIST* vl, char* var_name)
+vec_elem_find(VEC_LIST* vl, const char* var_name)
 {
   char* vec_elem_name;
   for( auto it = vl->begin(); it != vl->end(); ++it){
@@ -823,6 +932,12 @@ update_sailr_ptr_table ( ptr_table_object* table, char** vars, int var_num, VEC_
 
 	for( var_idx = 0; var_idx < var_num; ++var_idx){
 		var_name = vars[var_idx];
+		if(var_name == NULL){
+		    IF_DEBUG( Rcpp::Rcout << "NULL is ignored while updating ptr_table." << std::endl;);
+		    continue;
+		}else{
+		    IF_DEBUG(Rcpp::Rcout << "Update var(" << var_name  << ") " ; );
+		}
 		VEC_ELEM* vec_elem = vec_elem_find (vl, var_name);
 	  
 		switch(vec_elem_type_of(vec_elem)){
@@ -1109,12 +1224,27 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	  }
 	}
 	IF_DEBUG( Rcpp::Rcout << std::endl; );
+
+	// Specify variable names for special purposes
+	int service_var_num = 1;
+	char* service_var_array[service_var_num ];
+	std::string service_var_one( "_n_" );
+	service_var_array[0] = &service_var_one[0];
+
+	std::vector<std::string> service_vars;
+	if(service_var_num > 0){
+	  int srv_var_idx;
+	  for(srv_var_idx=0; srv_var_idx < service_var_num; srv_var_idx++){
+	    IF_DEBUG( Rcpp::Rcout << " \"" << service_var_array[srv_var_idx] << "\""; );
+	    service_vars.push_back(std::string(service_var_array[srv_var_idx]));
+	  }
+	}
 	
 	// Convert R dataframe into C++ Vec_LIST
 	IF_DEBUG( Rcpp::Rcout << "Convert Rcpp DataFame to C++ VEC_LIST" << std::endl; );
 
 	int conversion_error = 0;
-	VEC_LIST* vec_list = ConvertDataFrame(df, var_array, var_num, lhs_var_array, lhs_var_num , &conversion_error );
+	VEC_LIST* vec_list = ConvertDataFrame(df, var_array, var_num, lhs_var_array, lhs_var_num , service_var_array, service_var_num, &conversion_error );
 	if( conversion_error != 0 ){
 		// Free variable names
 		sailr_varnames_free(var_array, var_num);
@@ -1146,7 +1276,33 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		IF_DEBUG( Rcpp::Rcout << " \"" << nil_var_name << "\""; );
 	}
 	IF_DEBUG( Rcpp::Rcout << std::endl; );
-  
+
+	// Variables to update = var_array + service_var_array
+	// This is used to update ptr_table
+	char** vars_to_update;
+	int vars_to_update_size = var_num + service_var_num;
+	IF_DEBUG(Rcpp::Rcout << "Variables to update = var_array + service_var_array " << std::endl; );
+	vars_to_update = (char**) malloc( sizeof(char*) * vars_to_update_size );
+	int var_update_idx = 0;
+	while(var_update_idx < var_num){
+	    vars_to_update[var_update_idx] = var_array[var_update_idx];
+	    ++var_update_idx;
+	}
+	IF_DEBUG( Rcpp::Rcout << "Showing vars_to_update that is copied from var_array: " << std::endl; );
+	IF_DEBUG( int show_var_idx = 0; while(show_var_idx < var_num){ Rcpp::Rcout << vars_to_update[show_var_idx] << " " ; ++show_var_idx;}; Rcpp::Rcout << std::endl; );
+	int srv_var_idx = 0;
+	while(srv_var_idx < service_var_num){
+	    if(! cstring_exists_in_pchar_array( service_var_array[srv_var_idx] , vars_to_update, 0, var_num - 1)){
+		vars_to_update[var_update_idx] =  service_var_array[srv_var_idx];
+		IF_DEBUG(Rcpp::Rcout << service_var_array[srv_var_idx] << ": service var does not exist in source var names. added to vars_to_update." << std::endl; );
+	    }else{
+		vars_to_update[var_update_idx] =  NULL;
+		IF_DEBUG(Rcpp::Rcout << service_var_array[srv_var_idx] << ": service var already exists in source var names. vars_to_update is updated with NULL." << std::endl; );
+	    }
+	    ++var_update_idx;
+	    ++srv_var_idx;
+	}
+	IF_DEBUG( Rcpp::Rcout << "vars_to_update initialized." << std::endl; );
 
 	// For int and double, pass the address of each element of VEC_LIST to ptr_table.
 	// The values VEC_LIST points to are updated automatically after each calculation. 
@@ -1157,7 +1313,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	//
 
 	// Initialize ptr_table using vec_list's vectors' first element.
-	update_sailr_ptr_table( table, var_array, var_num, vec_list, 0 );
+	update_sailr_ptr_table( table, vars_to_update, vars_to_update_size, vec_list, 0 );
 
 	// Collect regular expression ptr_record's & string ptr_record's
 	// Regular expression literals on ptr_table need to be reset for every row, but need not be deleted.
@@ -1224,6 +1380,8 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	void** new_ptr;
 	int vm_exec_code_result = 1; // success
 	bool vm_exec_success = true;
+	bool sort_required = false;
+
 
 	IF_DEBUG( Rcpp::Rcout << "Calculation started. (" << "Num of rows to be processed: " << num_of_rows << ")" << std::endl; );
 
@@ -1245,7 +1403,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 			sailr_ext_func_hash_reset_last_executed( &extfunchash );
 		}
 
-		update_sailr_ptr_table( table, var_array, var_num, vec_list, row_idx );
+		update_sailr_ptr_table( table, vars_to_update, vars_to_update_size, vec_list, row_idx );
 		IF_DEBUG( if(row_idx == 0){  Rcpp::Rcout << "ptr_table is updated.\n" << std::flush;}) ;
 
 		if( vm_exec_code_result ==  1){ // if previously success
@@ -1317,21 +1475,23 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		IF_DEBUG( show_sailr_vec_list_nth(vec_list, row_idx ); );
 		IF_DEBUG( Rcpp::Rcout << "VEC_LIST is updated" << std::endl; );
 
-		if( vm_exec_code_result == 2 ){ // if suspended
-			if( extfunchash != NULL && ( strcmp( sailr_ext_func_hash_get_last_executed(&extfunchash), "push!") == 0 )){
-				// Push new row to DF & set the row number to pushed_row_idx
-				pushed_row_idx = vec_list_push_cloned_row(vec_list, row_idx);
-				IF_DEBUG( Rcpp::Rcout << "Copying row from " << row_idx << " to " << pushed_row_idx << std::endl; );
-				goto loop_when_suspended;
-			}
-		}
-
 		// Free string objects on ptr_table
 		IF_DEBUG( Rcpp::Rcout << "Num of str records to be cleaned : " << str_records_for_vars.size() << std::endl; );
 		for(auto str_record_iter = str_records_for_vars.begin(); str_record_iter != str_records_for_vars.end(); ++str_record_iter){
 			sailr_ptr_record_free_objects( *str_record_iter );
 		}
 
+		if( vm_exec_code_result == 2 ){ // if suspended
+			if( extfunchash != NULL && ( strcmp( sailr_ext_func_hash_get_last_executed(&extfunchash), "push!") == 0 )){
+				// Push new row to DF & set the row number to pushed_row_idx
+				pushed_row_idx = vec_list_push_cloned_row(vec_list, row_idx);
+				IF_DEBUG( Rcpp::Rcout << "Copying row from " << row_idx << " to " << pushed_row_idx << std::endl; );
+				// When push!() is called, sort is required
+				sort_required = true;
+				goto loop_when_suspended;
+			}
+		}
+			     
 		// Reset literal regular expressions
 		IF_DEBUG( Rcpp::Rcout << "Num of rexp literal records to be reset : " << rexp_records_for_literals.size() << std::endl; );
 		for(auto rexp_iter = rexp_records_for_literals.begin(); rexp_iter != rexp_records_for_literals.end(); ++rexp_iter){
@@ -1343,8 +1503,8 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		for(auto rexp_iter = rexp_records_for_vars.begin(); rexp_iter != rexp_records_for_vars.end(); ++rexp_iter){
 			sailr_ptr_record_free_objects( *rexp_iter );
 		}
-
 		IF_DEBUG( Rcpp::Rcout << "Ptr_record's with type of PTR_REXP are reset." << std::endl; );
+
 	}
 
 	IF_DEBUG( Rcout << "Calculation finished successfully" << std::endl; );
@@ -1364,7 +1524,36 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	IF_DEBUG( Rcpp::Rcout << "vm_exec_success code: " << vm_exec_success << std::endl; );
 	DataFrame new_df;
 	if(vm_exec_success){
-		new_df = ConvertVecList(vec_list, lhs_vars);
+		// For sorting
+		std::vector<std::tuple<int, int > > tup_vec;
+		unsigned int pos;
+		unsigned int current_nrow;
+		std::vector<int> order_vec;
+		if(sort_required){
+			IF_DEBUG( Rcpp::Rcout << "Find _n_ column in VEC_LIST" << std::endl;);
+			VEC_ELEM* rownum_vec_elem = vec_elem_find( vec_list, "_n_");
+			void* rownum_intvec_void = std::get<1>(*rownum_vec_elem);
+			std::vector<int>* rownum_intvec = (std::vector<int>*) rownum_intvec_void;
+			current_nrow = rownum_intvec->size();
+
+			IF_DEBUG( Rcpp::Rcout << "Prepare tuple vec for sorting" << std::endl; );
+			for( pos = 0 ; pos < current_nrow ; ++pos ){
+				tup_vec.emplace_back( rownum_intvec->operator[](pos), pos);
+			}
+			// sort by first element
+			IF_DEBUG( Rcpp::Rcout << "Sorting" << std::endl; );
+			std::stable_sort(tup_vec.begin(), tup_vec.end());
+			IF_DEBUG( Rcpp::Rcout << "Sorting vector is obtained" << std::endl; );
+
+			// extract second elements as vector 
+			order_vec = std::vector<int>(current_nrow);
+			for( pos = 0 ; pos < current_nrow ; ++pos ){
+				order_vec[pos] = std::get<1>(tup_vec[pos]); // std::get<1>() second element
+			}
+			new_df = ConvertVecList(vec_list, lhs_vars, &order_vec , service_vars);
+		}else{
+			new_df = ConvertVecList(vec_list, lhs_vars, NULL , service_vars);
+		}
 	}
 	
 	// Free temporarily used cstring variable names
@@ -1372,6 +1561,9 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	sailr_varnames_free(var_array, var_num);
 	sailr_varnames_free(lhs_var_array, lhs_var_num);
 	sailr_varnames_free(rhs_var_array, rhs_var_num);
+
+	// Free vars_to_update which is temporarily used to store variable names to update ptr_table
+	free(vars_to_update);
 
 	/* Free memory of instructions */
 	IF_DEBUG( Rcpp::Rcout << "Free VM instruction list" << std::endl; );

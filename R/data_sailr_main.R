@@ -18,6 +18,12 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 			# rowname needs not be added as a new column
 		}
 	}
+	# Add row number column for internal use
+	colname_n = "_n_"
+	if( colname_n %in% colnames(df) ){
+		cat("NOTE: column '_n_' is replaced with row number for internal use, and will be deleted when execution is finished.\n")
+	}
+	df[,colname_n] = seq(1, nrow(df))
 
 	# If some columns have the same name, left most columns are used
 	ori_colnames = colnames(df)
@@ -32,15 +38,15 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 	}, USE.NAMES = TRUE )
 
 	df_wo_duplicated_colnames = df[ positions_used_for_each_colname ]
-	ori_nrow = nrow(df_wo_duplicated_colnames)
 
 	result = .data_sailr_cpp_execute( code, df_wo_duplicated_colnames)
-	result_nrow = nrow(result)
-	if(ori_nrow != result_nrow ){
+        
+	if( ("DataSailrSorted" %in% names(attributes(result))) && attr(result, "DataSailrSorted") == TRUE ){
 		if(fullData == TRUE){
-			cat(sprintf("The dataframe row size is extend (%d=>%d). fullData option is changed to FALSE automatically.\n", ori_nrow , result_nrow))
+			cat("The result data.frame is sorted. fullData parameter is automatically set FALSE.\n")
 			fullData = FALSE
 		}
+                attr(result, "DataSailrSorted") = NULL
 	}
 
 	if(stringsAsFactors == TRUE ){
@@ -63,7 +69,7 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 			df[pos_to_update] <<- result_df[colname_for_update]
 		})
 		# add new columns
-		result_df = cbind(df , result_df[cols_for_addition])
+		result_df = cbind(df[, -which(names(df) %in% c("_n_"))] , result_df[cols_for_addition])
 	}
 
 	return(result_df)
