@@ -1226,10 +1226,12 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	IF_DEBUG( Rcpp::Rcout << std::endl; );
 
 	// Specify variable names for special purposes
-	int service_var_num = 1;
+	int service_var_num = 2;
 	char* service_var_array[service_var_num ];
 	std::string service_var_one( "_n_" );
+	std::string service_var_two( "_discard_" );
 	service_var_array[0] = &service_var_one[0];
+	service_var_array[1] = &service_var_two[0];
 
 	std::vector<std::string> service_vars;
 	if(service_var_num > 0){
@@ -1366,6 +1368,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	ext_func_hash_object* extfunchash; 
 	extfunchash = sailr_ext_func_hash_init();
 	sailr_ext_func_hash_add( &extfunchash, "push!", 0, &sailr_external_push_row );
+	sailr_ext_func_hash_add( &extfunchash, "discard!", 0, &sailr_external_discard_row );
 	sailr_ext_func_hash_add( &extfunchash, "MYPRINTLN", 1, &sailr_external_println );
 	
 	// Execute code 
@@ -1381,6 +1384,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	int vm_exec_code_result = 1; // success
 	bool vm_exec_success = true;
 	bool sort_required = false;
+	bool discard_flag = false;
 
 
 	IF_DEBUG( Rcpp::Rcout << "Calculation started. (" << "Num of rows to be processed: " << num_of_rows << ")" << std::endl; );
@@ -1416,7 +1420,19 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 		if( vm_exec_code_result == 0 ){
 			vm_exec_success = false;  // Runtime error
 			goto finalize;
+		}else if(vm_exec_code_result == 2){
+			// discard!() ends the current row processing, but to obtain the last executed function name (which is held by vm), the vm should not be destroyed.
+			// For this purpose, the vm_exec_code_result is set 2 (suspend).
+			// When discard!() is called, the following code is executed, and vm_exec_code_result needs to be set 1 at the end to finish the current row.
+			if(extfunchash != NULL && sailr_ext_func_hash_get_last_executed(&extfunchash) != NULL && ( strcmp( sailr_ext_func_hash_get_last_executed(&extfunchash), "discard!") == 0 )){
+				IF_DEBUG(Rcpp::Rcout << "discard!() sets _discard_ to be 1"  << std::endl;);
+				sailr_ptr_table_update_int(&table, "_discard_", 1 ); // 0: not discard, 1: discard
+				discard_flag = true;
+				sailr_ext_vm_stack_end(vmstack);
+				vm_exec_code_result = 1;
+			}
 		}
+		
 		IF_DEBUG( Rcpp::Rcout << "VM execution finished." << std::endl; );
 		IF_DEBUG( if(row_idx == 0){ Rcpp::Rcout << "Showing ptr_table just after the first row calculation." << std::flush;} );
 		IF_DEBUG( if(row_idx == 0){ sailr_ptr_table_show_all(&table); std::cout << std::flush;} );
@@ -1525,20 +1541,27 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	DataFrame new_df;
 	if(vm_exec_success){
 		// For sorting
-		std::vector<std::tuple<int, int > > tup_vec;
+		std::vector<std::tuple<int, int, int > > tup_vec;
 		unsigned int pos;
+		unsigned int target_pos;
 		unsigned int current_nrow;
 		std::vector<int> order_vec;
-		if(sort_required){
+		std::vector<int> final_order_vec;
+		if(sort_required || discard_flag){
 			IF_DEBUG( Rcpp::Rcout << "Find _n_ column in VEC_LIST" << std::endl;);
 			VEC_ELEM* rownum_vec_elem = vec_elem_find( vec_list, "_n_");
 			void* rownum_intvec_void = std::get<1>(*rownum_vec_elem);
 			std::vector<int>* rownum_intvec = (std::vector<int>*) rownum_intvec_void;
 			current_nrow = rownum_intvec->size();
 
+			IF_DEBUG( Rcpp::Rcout << "Find _discard_ column in VEC_LIST" << std::endl;);
+			VEC_ELEM* discard_vec_elem = vec_elem_find( vec_list, "_discard_");
+			void* discard_intvec_void = std::get<1>(*discard_vec_elem);
+			std::vector<int>* discard_intvec = (std::vector<int>*) discard_intvec_void;
+
 			IF_DEBUG( Rcpp::Rcout << "Prepare tuple vec for sorting" << std::endl; );
 			for( pos = 0 ; pos < current_nrow ; ++pos ){
-				tup_vec.emplace_back( rownum_intvec->operator[](pos), pos);
+				tup_vec.emplace_back( rownum_intvec->operator[](pos), pos, discard_intvec->operator[](pos) );
 			}
 			// sort by first element
 			IF_DEBUG( Rcpp::Rcout << "Sorting" << std::endl; );
@@ -1547,10 +1570,23 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 
 			// extract second elements as vector 
 			order_vec = std::vector<int>(current_nrow);
-			for( pos = 0 ; pos < current_nrow ; ++pos ){
-				order_vec[pos] = std::get<1>(tup_vec[pos]); // std::get<1>() second element
+
+			pos = 0;
+			target_pos = 0;
+			while( pos < current_nrow){
+				if(std::get<2>(tup_vec[pos]) != 1){ // discard is not 1 (= keep the row)
+					order_vec[target_pos] = std::get<1>(tup_vec[pos]); // std::get<1>() second element
+					++target_pos;
+				}
+				++pos;
 			}
-			new_df = ConvertVecList(vec_list, lhs_vars, &order_vec , service_vars);
+			IF_DEBUG( Rcpp::Rcout << "Size of the final dataframe is to be " << target_pos << std::endl;);
+			final_order_vec = std::vector<int>( order_vec.begin(), order_vec.begin() + target_pos);
+			IF_DEBUG( Rcpp::Rcout << "Size of the final dataframe is " << final_order_vec.size() << std::endl;);
+			
+			IF_DEBUG( for(auto iter_final: final_order_vec){ Rcpp::Rcout << iter_final << " ";}; Rcpp::Rcout << std::endl; );
+			
+			new_df = ConvertVecList(vec_list, lhs_vars, &final_order_vec , service_vars);
 		}else{
 			new_df = ConvertVecList(vec_list, lhs_vars, NULL , service_vars);
 		}

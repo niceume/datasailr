@@ -10,6 +10,12 @@ sailr_external_push_row( arg_list* arglist , unsigned int num_args, vm_stack* vm
 }
 
 int
+sailr_external_discard_row( arg_list* arglist , unsigned int num_args, vm_stack* vmstack )
+{
+	return 2; // suspend is used to exit vm loop.
+}
+
+int
 sailr_external_println( arg_list* arglist , unsigned int num_args, vm_stack* vmstack)
 {
 	arg_item* arg = arglist;

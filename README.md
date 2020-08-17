@@ -554,6 +554,23 @@ datasailr::sail(wide_df , code = code)
 ```
 
 
+* discard!() function
+
+discard!() function drops the current row from the result dataframe. A common usage of this function is to filter out specific rows using if condition.
+
+```
+data(mtcars)
+
+datasailr::sail(mtcars, code='
+n = _n_
+cyl = cyl
+if(cyl != 4){
+  discard!(); // Filter out rows that do not have 4 for cyl. i.e. Keep rows with 4 for cyl.
+}
+')
+```
+
+
 ## For SAS software users
 
 List of major differences between DataSailr and DATA Step in SAS software.

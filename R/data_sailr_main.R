@@ -25,6 +25,13 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 	}
 	df[,colname_n] = seq(1, nrow(df))
 
+	# Add _discard_ column for internal use
+	colname_discard = "_discard_"
+	if( colname_discard %in% colnames(df) ){
+		cat("NOTE: column '_discard_' is replaced with 0/1 for internal use, and will be deleted when execution is finished.\n")
+	}
+	df[,colname_discard] = as.integer( rep(0, nrow(df)))
+
 	# If some columns have the same name, left most columns are used
 	ori_colnames = colnames(df)
 	ori_unique_colnames = unique(ori_colnames)
@@ -69,7 +76,7 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 			df[pos_to_update] <<- result_df[colname_for_update]
 		})
 		# add new columns
-		result_df = cbind(df[, -which(names(df) %in% c("_n_"))] , result_df[cols_for_addition])
+		result_df = cbind(df[, -which(names(df) %in% c("_n_", "_discard_"))] , result_df[cols_for_addition])
 	}
 
 	return(result_df)

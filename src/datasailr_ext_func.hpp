@@ -7,6 +7,8 @@ extern "C" {
 }
 
 int sailr_external_push_row( arg_list* arglist , unsigned int num_args, vm_stack* vmstack );
+int sailr_external_discard_row( arg_list* arglist , unsigned int num_args, vm_stack* vmstack );
+
 // Test functions
 int sailr_external_println( arg_list* arglist , unsigned int num_args, vm_stack* vmstack);
 int sailr_external_add2( arg_list* arglist , unsigned int num_args, vm_stack* vmstack);
