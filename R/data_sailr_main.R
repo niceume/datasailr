@@ -47,13 +47,14 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 	df_wo_duplicated_colnames = df[ positions_used_for_each_colname ]
 
 	result = .data_sailr_cpp_execute( code, df_wo_duplicated_colnames)
-        
-	if( ("DataSailrSorted" %in% names(attributes(result))) && attr(result, "DataSailrSorted") == TRUE ){
+
+	if( ("DataSailr_NewOrder" %in% names(attributes(result))) && attr(result, "DataSailr_NewOrder") == TRUE ){
 		if(fullData == TRUE){
-			cat("The result data.frame is sorted. fullData parameter is automatically set FALSE.\n")
-			fullData = FALSE
+			order_vec = attr(result, "DataSailr_NewOrderVector")
+			df = df[order_vec,]
 		}
-                attr(result, "DataSailrSorted") = NULL
+		attr(result, "DataSailr_NewOrder") = NULL
+		attr(result, "DataSailr_NewOrderVector") = NULL
 	}
 
 	if(stringsAsFactors == TRUE ){

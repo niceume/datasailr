@@ -8,7 +8,7 @@
     + The function name, push!, comes from two reasons.
         + It is important to clarify that this function is different from Sailr built-in functions. This function works for more than each row level. It changes dataframe structures, and it has ! at the end.
         + This function does not stop but suspends libsailr vm execution, and adds or pushes rows. Therefore it is named as push.
-    + The common usage of this function is converting data of wide format into long format. In such a case, not all the columns need to be kept. Therefore, the fullData option is changed to be set FALSE.
+    + The common usage of this function is converting data of wide format into long format.
 * discard!() function is implemented as a DataSailr extended function.
     + discard!() function drops the current row from the result dataframe.
     + A common usage of this function is to filter out specific rows using if condition.

@@ -470,11 +470,9 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars, std::vector<int>* o
 
   IF_DEBUG(Rcpp::Rcout << "Start Convert VEC_LIST. " << std::endl;);
 
-  IntegerVector rcpp_one_indexed_order;
   IntegerVector rcpp_order;
   if(order != NULL){
-      rcpp_one_indexed_order = Rcpp::wrap(*order);
-      rcpp_order = rcpp_one_indexed_order ;
+      rcpp_order = Rcpp::wrap(*order);
   }else{
       rcpp_order = IntegerVector::create(NA_INTEGER);
   }
@@ -634,8 +632,12 @@ ConvertVecList(VEC_LIST* vl, std::vector<std::string> lvars, std::vector<int>* o
   IF_DEBUG( Rcpp::CharacterVector colname_vec = new_df.names(); for(const auto& iter : colname_vec){ Rcpp::Rcout << iter << " "; }; Rcpp::Rcout << std::endl; );
   
   Rcpp::DataFrame new_df_out = Rcpp::DataFrame::create(new_df, _["stringsAsFactors"] = false);  // This step is required to output proper data.frame. Also, stringsAsFactors attribute is required to be dataframe.
-  if(order != NULL){ // This DataFrame is sorted.
-      new_df_out.attr("DataSailrSorted") = Rcpp::LogicalVector::create(1);
+  if(order != NULL){ // This DataFrame is ordered.
+      std::vector<int>* rownum_vec = (std::vector<int>*) std::get<1>(*(vec_elem_find(vl, "_n_")));
+      IntegerVector rownum_rcpp_vec = Rcpp::wrap(*rownum_vec);
+      REORDER_INTVEC(rownum_rcpp_vec, rcpp_order);
+      new_df_out.attr("DataSailr_NewOrder") = Rcpp::LogicalVector::create(1); // TRUE in R
+      new_df_out.attr("DataSailr_NewOrderVector") = rownum_rcpp_vec ; 
   }
   IF_DEBUG( Rcpp::Rcout << "Column names after converting to DataFrame: " ; );
   IF_DEBUG( Rcpp::CharacterVector colname_vec2 = new_df_out.names(); for(const auto& iter : colname_vec2){ Rcpp::Rcout << iter << " "; }; Rcpp::Rcout << std::endl; );
