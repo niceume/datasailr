@@ -1228,17 +1228,17 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	IF_DEBUG( Rcpp::Rcout << std::endl; );
 
 	// Specify variable names for special purposes
-	int service_var_num = 2;
-	char* service_var_array[service_var_num ];
+	#define SERVICE_VAR_NUM 2
+	char* service_var_array[ SERVICE_VAR_NUM ];
 	std::string service_var_one( "_n_" );
 	std::string service_var_two( "_discard_" );
 	service_var_array[0] = &service_var_one[0];
 	service_var_array[1] = &service_var_two[0];
 
 	std::vector<std::string> service_vars;
-	if(service_var_num > 0){
+	if(SERVICE_VAR_NUM > 0){
 	  int srv_var_idx;
-	  for(srv_var_idx=0; srv_var_idx < service_var_num; srv_var_idx++){
+	  for(srv_var_idx=0; srv_var_idx < SERVICE_VAR_NUM; srv_var_idx++){
 	    IF_DEBUG( Rcpp::Rcout << " \"" << service_var_array[srv_var_idx] << "\""; );
 	    service_vars.push_back(std::string(service_var_array[srv_var_idx]));
 	  }
@@ -1248,7 +1248,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	IF_DEBUG( Rcpp::Rcout << "Convert Rcpp DataFame to C++ VEC_LIST" << std::endl; );
 
 	int conversion_error = 0;
-	VEC_LIST* vec_list = ConvertDataFrame(df, var_array, var_num, lhs_var_array, lhs_var_num , service_var_array, service_var_num, &conversion_error );
+	VEC_LIST* vec_list = ConvertDataFrame(df, var_array, var_num, lhs_var_array, lhs_var_num , service_var_array, SERVICE_VAR_NUM, &conversion_error );
 	if( conversion_error != 0 ){
 		// Free variable names
 		sailr_varnames_free(var_array, var_num);
@@ -1284,7 +1284,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	// Variables to update = var_array + service_var_array
 	// This is used to update ptr_table
 	char** vars_to_update;
-	int vars_to_update_size = var_num + service_var_num;
+	int vars_to_update_size = var_num + SERVICE_VAR_NUM;
 	IF_DEBUG(Rcpp::Rcout << "Variables to update = var_array + service_var_array " << std::endl; );
 	vars_to_update = (char**) malloc( sizeof(char*) * vars_to_update_size );
 	int var_update_idx = 0;
@@ -1295,7 +1295,7 @@ data_sailr_cpp_execute( Rcpp::CharacterVector rchars, Rcpp::DataFrame df)
 	IF_DEBUG( Rcpp::Rcout << "Showing vars_to_update that is copied from var_array: " << std::endl; );
 	IF_DEBUG( int show_var_idx = 0; while(show_var_idx < var_num){ Rcpp::Rcout << vars_to_update[show_var_idx] << " " ; ++show_var_idx;}; Rcpp::Rcout << std::endl; );
 	int srv_var_idx = 0;
-	while(srv_var_idx < service_var_num){
+	while(srv_var_idx < SERVICE_VAR_NUM){
 	    if(! cstring_exists_in_pchar_array( service_var_array[srv_var_idx] , vars_to_update, 0, var_num - 1)){
 		vars_to_update[var_update_idx] =  service_var_array[srv_var_idx];
 		IF_DEBUG(Rcpp::Rcout << service_var_array[srv_var_idx] << ": service var does not exist in source var names. added to vars_to_update." << std::endl; );
