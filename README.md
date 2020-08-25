@@ -2,14 +2,14 @@
 
 DataSailr is an R package which enables row by row data manipulation. 
 
-The data manipulation process is written in Sailr, a language designed specifically for data manipulation. The internal data manipulation engine is a library called libsailr, which is written in C/C++ and the processing speed is relatively fast. If you are interested in DataSailr's internal implementation, please also have a look at libsailr library. 
+The data manipulation process is written in Sailr script, a language designed specifically for data manipulation. The internal data manipulation engine is a library called libsailr, which is written in C/C++ and the processing speed is relatively fast. If you are interested in DataSailr's internal implementation, please also have a look at libsailr library. 
 
 This package is still in development. Please let me know if you find bugs or inconsistent behaviors. The documentation is not enough, so I am willing to explain it if you find something difficult.
 
 
 ## Description & Motivation
 
-DataSailr package brings intuitive and fast row by row data manipulation to R. The data manipulation instruction for each row is writtein in Sailr. Sailr is an easy script language designed specially for data manipulation. In vanilla R, dataframe is manipulated using column vector and vector operations. When summarizing dataframe, column wise calculation is intuitive and ideal, but when manipulating dataframe you need to see each record in the row direction. For example, when calculating body mass index (BMI) from body weight and height, calculation needs to be done for each row. Categorizing each person based on his/her BMI is also done for each row.
+DataSailr package brings intuitive and fast row by row data manipulation to R. The data manipulation instruction for each row is writtein in Sailr script. Sailr script is an easy script language designed specially for data manipulation. In vanilla R, dataframe is manipulated using column vector and vector operations. When summarizing dataframe, column wise calculation is intuitive and ideal, but when manipulating dataframe you need to see each record in the row direction. For example, when calculating body mass index (BMI) from body weight and height, calculation needs to be done for each row. Categorizing each person based on his/her BMI is also done for each row.
 
 A famous R package, dplyr, has been improving the same kind of points. It enables data manipulation without thinking much about column vectors. Pipe operator, %>% in magrittr package, and dplyr functions realize intuitive data manipulation flow. The DataSailr package enables the same kind of thing with a single Sailr code. The two packages do not compete, and I intend to implement DataSailr as it also can work with dplyr.
 
@@ -162,18 +162,18 @@ else { country = "Other" }
 
 
 
-## Grammar of Sailr
+## Grammar of Sailr script
 
-Sailr is specially intended for use of data manipulation. From the programming language view, the functionality is not enough and is not a general-purpose programming language, but you can write instructions and manipulate data in an intuitive way. For SAS(*) software users, the grammer of Sailr is relatively easy to understand. Differences are mentioned later in this README.
+Sailr script is specially intended for use of data manipulation. From the programming language view, the functionality is not enough and is not a general-purpose programming language, but you can write instructions and manipulate data in an intuitive way. For SAS(*) software users, the grammer of Sailr script is relatively easy to understand. Differences are mentioned later in this README.
 
 (*) SAS is the world's largest privately held software company. SAS provides SAS softwares which are used by professional data analysis users.
 
 
-### [IMPORTANT] Variables & Assignment operation [MUST READ]
+### Variables & Assignment operation [IMPORTANT]
 
-* Variables in Sailr and variables in statistics
+* Variables in Sailr script and variables in statistics
 
-In general-purpose programming language, variables usually mean identifiers to point to some memory or some objects. However in statistics, dataset column names are usually called variables. Sailr follows the statistics way because it is designed not for general-purpose programming language, but is designed for processing dataset. Variables in codes correspond to the column with the same name. 
+In general-purpose programming language, variables usually mean identifiers to point to some memory or some objects. However in statistics, dataset column names are usually called variables. Sailr script follows the statistics way because it is designed not for general-purpose programming language, but is designed for processing dataset. Variables in codes correspond to the column with the same name. 
 
 (e.g.) The following code print the value of column X.
 
@@ -190,7 +190,7 @@ Y = X
 
 ### Types
 
-Sailr can deal with the following types, and so does DataSailr.
+Sailr script can deal with the following types, and so does DataSailr.
 
 1. Int
 2. Double
@@ -315,7 +315,7 @@ date_add_n_days( unix_date, days )
 date_format( unix_date, str_format )  // This format should follow C++'s std::chrono::format. "%m/%d/%y" or "%Y-%m-%d" is popular.
 ```
 
-Currently, users cannot implement functions in Sailr by themselves. 
+Currently, users cannot implement functions in Sailr script by themselves. 
 If you want to implement your own function, you need to modify libsailr and write code in C.
 The libsailr C API is not mature. The interface for users is not organized. Please feel free to contact the author if you want your own function.
 
@@ -598,32 +598,27 @@ DataSailr's special feature is that you can write multiple row level manipulatio
 | How to manipulate data | Apply a single Sailr code      | Apply multiple functions using (%>%) |
 | Create new column      | assign value to new variable   | mutate()             |
 | Keep some columns      | (Not implemented yet)          | select()             |
-| Keep some rows         | (Not implemented yet)          | filter()             |
+| Keep some rows         | discard!() drops rows          | filter()             |
 | Summarize columns      | No use for this purpose        | summarize()          |
 | Sort rows              | No use for this purpose        | arrange()            |
 | Regular expression     | Built-in                       | Partially available with another R package |
 | Available functions    | Can call only Sailr functions  | Can call R functions |
+| Convert wide to long format | push!() function          | (not dplyr but reshape2 package) |
+| Convert long to wide format | (Not implemented yet)     | (not dplyr but reshape2 package) |
 
 
 
-## For developers & Inside DataSailr
+## For developers
 
 ### Architecture summary
 
 The core engine of this package is libsailr. Libsailr takes Sailr script and does arithmetic calculations and string/character manipulations. This R package wraps libsair, and passes values of each row to the libsailr library. The results of each row will be returned as each row of new dataframe.
 
-
-
-## Wish list
-
-Writing a long string in R is not easy b/c I need to escape quotations. If R allowed HERE document or triple single quotation literal for strings, it would relieve this pain. 
-
+DataSailr internals are described in the official website.
 
 ## Contact
 
 Your feedback is welcome. 
-
-Toshi Umehara, toshi@niceume.com.
 
 Maintainer: Toshi Umehara <toshi@niceume.com>
 
