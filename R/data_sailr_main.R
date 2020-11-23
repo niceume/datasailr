@@ -57,6 +57,13 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 		attr(result, "DataSailr_NewOrderVector") = NULL
 	}
 
+	if( ncol(result) == 0 ){
+		# If no assignments were executed in script. 
+		assign_occured_in_script = FALSE
+	}else{
+		assign_occured_in_script = TRUE
+	}
+
 	if(stringsAsFactors == TRUE ){
 		result_df = data.frame( lapply(result, function(x) if (is.factor(x)) as.character(x) else {x} ), stringsAsFactors = TRUE )  # Deal strings as factors
 	}else{
@@ -71,13 +78,19 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 	colnames_for_update = colnames(result_df)[cols_for_update] #character
 	cols_for_addition =  !cols_for_update #logical
 	if(fullData == T){
-		# update original columns
-		lapply(colnames_for_update, function(colname_for_update){
-			pos_to_update = positions_used_for_each_colname[colname_for_update]
-			df[pos_to_update] <<- result_df[colname_for_update]
-		})
-		# add new columns
-		result_df = cbind(df[, -which(names(df) %in% c("_n_", "_discard_"))] , result_df[cols_for_addition])
+		if(assign_occured_in_script){
+			# update original columns
+			lapply(colnames_for_update, function(colname_for_update){
+				pos_to_update = positions_used_for_each_colname[colname_for_update]
+				df[pos_to_update] <<- result_df[colname_for_update]
+			})
+			# add new columns
+			result_df = cbind(df[, -which(names(df) %in% c("_n_", "_discard_"))] , result_df[cols_for_addition])
+		}else{
+			# If no assignments were executed in script, use the original dataframe with updated row orders.
+			# Also, _n_ and _discard_ are removed.
+			result_df = df[, -which(names(df) %in% c("_n_", "_discard_"))]
+		}
 	}
 
 	return(result_df)

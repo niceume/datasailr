@@ -1,5 +1,11 @@
 # HISTORY
 
+## Version 0.8.7
+
+* Fixes
+    + When assignment does not happen in script, an error occured. However, there are cases where only discard!() and push!() are executed, and in such cases processed dataset should be returned if fullData = T. This is fixed.
+
+
 ## Version 0.8.6
 
 * Update to follow libsailr's external function availability.

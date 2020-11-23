@@ -1,7 +1,7 @@
 Package: datasailr
 Type: Package
 Title: Row by Row Data Processing Tool, Using 'Sailr' Script
-Version: 0.8.6
+Version: 0.8.7
 Date: 2020-08-25
 Maintainer: Toshihiro Umehara <toshi@niceume.com>
 Authors@R: person("Toshihiro", "Umehara", email="toshi@niceume.com", role=c("aut", "cre"))
