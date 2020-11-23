@@ -37,7 +37,6 @@ typedef unsigned int SXPTYPE;
 /* --------------------------------------------------------- */
 // Conditions
 #define SAILR_NULL_UPDATED
-// #define DEBUG
 
 // Macro
 #ifdef DEBUG

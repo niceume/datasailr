@@ -63,6 +63,26 @@ MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
 # compile Attributes for rcpp
 sh ./exec/compileAttr.sh
 
+# enable/disable debug option for libsailr and datasailr
+
+AC_ARG_ENABLE([libsailr-debug],
+    AS_HELP_STRING([--enable-libsailr-debug], [Enable feature libsailr debug]),
+    [
+      add_libsailr_debug="-DDEBUG "
+    ],
+    [
+      add_libsailr_debug=""
+    ])
+
+AC_ARG_ENABLE([datasailr-debug],
+    AS_HELP_STRING([--enable-datasailr-debug], [Enable feature datasailr debug]),
+    [
+      add_datasailr_debug="-DDEBUG "
+    ],
+    [
+      add_datasailr_debug=""
+    ])
+
 # set default values
 
 [onigmo_include_path=""]
@@ -179,6 +199,9 @@ AC_COMPILE_IFELSE(
 AC_LANG_POP([C++])
 
 # Export the following shell variables as substitute variales.
+AC_SUBST([add_libsailr_debug])
+AC_SUBST([add_datasailr_debug])
+
 AC_SUBST([add_onigmo_include_path])
 AC_SUBST([add_onigmo_lib_path])
 AC_SUBST([add_r_include_path])

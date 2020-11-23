@@ -4,14 +4,14 @@
 @add_onigmo_include_path@ #This defines the path, $(ONIG_INCLUDE_DIR)
 
 CXX_STD=CXX11
-PKG_CXXFLAGS=-Ilibsailr -I$(ONIG_INCLUDE_DIR) @needs_nullptr_support_flag@ # CPP means c preprocessor, CXX means cpp compiler.
+PKG_CXXFLAGS=-Ilibsailr -I$(ONIG_INCLUDE_DIR) @needs_nullptr_support_flag@ @add_datasailr_debug@ # CPP means c preprocessor, CXX means cpp compiler.
 
-PKG_CFLAGS=-Ilibsailr -I$(ONIG_INCLUDE_DIR) @add_r_include_path@ 
+PKG_CFLAGS=-Ilibsailr -I$(ONIG_INCLUDE_DIR) @add_r_include_path@
 
 PKG_LIBS = $(LDFLAGS) -Llibsailr -lsailr @add_onigmo_lib_path@ -lonigmo 
 
-LIBSAILR_CFLAGS=$(CFLAGS) $(CPICFLAGS) -I. -I$(ONIG_INCLUDE_DIR)
-LIBSAILR_CXXFLAGS=$(CXXFLAGS) $(CPICFLAGS) -Ivm -Istring
+LIBSAILR_CFLAGS=$(CFLAGS) $(CPICFLAGS) -I. -I$(ONIG_INCLUDE_DIR) @add_libsailr_debug@
+LIBSAILR_CXXFLAGS=$(CXXFLAGS) $(CPICFLAGS) -Ivm -Istring @add_libsailr_debug@
 
 
 # Previously the following code was used. Now onigmo library is built only for static library.
@@ -42,5 +42,5 @@ libsailr/libsailr.a:
 	@echo "compiling libsailr engine."
 	@echo $$PATH
 	@echo "Makevars.in"
-	$(MAKE) build --directory libsailr  CXX="$(CXX)" CC="$(CC)" CFLAGS="$(LIBSAILR_CFLAGS) @add_r_include_path@" CXXFLAGS="$(LIBSAILR_CXXFLAGS)" AR="$(AR) rvs" # -DDEBUG 
+	$(MAKE) build --directory libsailr  CXX="$(CXX)" CC="$(CC)" CFLAGS="$(LIBSAILR_CFLAGS) @add_r_include_path@" CXXFLAGS="$(LIBSAILR_CXXFLAGS)" AR="$(AR) rvs"
 
