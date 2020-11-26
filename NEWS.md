@@ -2,6 +2,9 @@
 
 ## Version 0.8.7
 
+* Thanksgiving Day Release (11/26/2020)
+* In configure.ac, Onigmo's configure script is changed to be called with --disable-maintainer-mode, by which users do not re-run autoconf. (In some situations where timestamp information is not correctly preserved, autoconf tries to run again on user machines, which may cause aclocal missing error.)
+    + To enable/disable maintainer mode, Onigmo's configure.ac needs to have 'AM_MAINTAINER_MODE([enable])'. DataSailr packaging toolchain modifies Onigmo's configure.ac to have this line.
 * README and documents now use the term 'DataSailr script'.
 * Options for configure script, --enable-libsailr-debug and --enable-datasailr-debug, are now available.
     + R CMD INSTALL can pass these options to configure with '--configure-args=' option.
