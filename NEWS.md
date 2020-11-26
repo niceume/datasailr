@@ -2,6 +2,7 @@
 
 ## Version 0.8.7
 
+* README and documents now use the term 'DataSailr script'.
 * Options for configure script, --enable-libsailr-debug and --enable-datasailr-debug, are now available.
     + R CMD INSTALL can pass these options to configure with '--configure-args=' option.
     + By setting these options, -DDEBUG options are passed to compilers and DEBUG macro variable is defined.

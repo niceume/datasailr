@@ -4,13 +4,13 @@
 \alias{datasailr-package}
 \docType{package}
 \title{
-  Fast Row by Row Data Processing Tool, Using 'Sailr' Script
+  Row by Row Data Processing Tool, Using 'DataSailr' Script
 }
 \description{
-  A fast row by row data processing tool. You can write data manipulation code in 'Sailr' script which is specially intended for the data manipulation. The package uses 'libsailr' (C/C++ library) for its 'Sailr' code parsing and its execution.
+  A row by row data processing tool. You can write data manipulation code in 'DataSailr' script which is specially intended for the data manipulation. The package uses 'libsailr' (C/C++ library) for its 'DataSailr' code parsing and its execution.
 }
 \details{
-  The main function, datasailr::sail(), takes dataframe as its 1st argument and 'Sailr' script as its 2nd argument, and returns the processing results as dataframe. This package works with 'libsailr' library, which conducts arithmetic calculations and string/character manipulations following 'Sailr' script. This 'DataSailr' package passes both 'Sailr' script and values of each row of dataframe to the 'libsailr', and 'libsailr' processes those values of each row. The processing results are stored and are returned as dataframe. 
+  The main function, datasailr::sail(), takes dataframe as its 1st argument and 'DataSailr' script as its 2nd argument, and returns the processing results as dataframe. This package works with 'libsailr' library, which conducts arithmetic calculations and string/character manipulations following 'Sailr' script (which is a base version of 'DataSailr' script). 'DataSailr' package passes both 'DataSailr' script and values of each row of dataframe to the 'libsailr', and 'libsailr' processes those values of each row. The processing results are stored and are returned as dataframe.
 }
 \author{
 Toshi Umehara, toshi@niceume.com.
