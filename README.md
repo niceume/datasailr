@@ -60,6 +60,283 @@ cd ..
 R CMD INSTALL datasailr --preclean --no-multiarch --build
 ```
 
+## Testing
+
+### Run tests
+
+From R interpreter, please run the following code. 
+
+```
+install.packages("datasailr")
+library(datasailr)
+test_sail()
+```
+
+### Run tests manually
+
+These test scripts can be run manually as follows. (RUnit package needs to be installed)
+
+
+#### Test arithmetic operators
+
+The following code creates new columns from iris datset as follows.
+
+* 'Sepal.Area' column: Sepal.Length column multiplied by Sepal.Width column values
+* 'Petal.Area' column: Petal.Length column multiplied by Petal.Width column values
+* 'Sepal.Petal.Ratio' column: Sepal.Area column divided by Petal.Area column values
+* 'exp' column: 2 to the 5th power (All the elements of this new column has the same value)
+* 'exp2' column: 2 to the 5th power (All the elements of this new column has the same value)
+* 'exp3' column: 2.2 to the 3rd power (All the elements of this new column has the same value)
+
+
+```
+test_arithmetic <- function(){
+
+  ##### Create new columns using datasailr (iris_result) #####
+
+  data(iris)
+  code = "
+Sepal.Area = Sepal.Length * Sepal.Width
+Petal.Area = Petal.Length * Petal.Width
+ 
+Sepal.Petal.Ratio = Sepal.Area / Petal.Area
+ 
+exp = 2 ^ 5
+exp2 = 2 ** 5 
+exp3 = 2.2 ^ 3 
+"
+
+  iris_result = datasailr::sail(iris, code)
+
+
+  ##### Create new columns using R's standard way (iris2) #####
+
+  iris2 = iris;
+  iris2[,"Sepal.Area"] = iris2[,"Sepal.Length"] * iris2[,"Sepal.Width"]
+  iris2[,"Petal.Area"] = iris2[,"Petal.Length"] * iris2[,"Petal.Width"]
+  iris2[,"Sepal.Petal.Ratio"] = iris2[,"Sepal.Area"] / iris2[,"Petal.Area"]
+  
+  n_rows = nrow(iris2)
+  iris2$exp = rep(2 ^ 5, n_rows)
+  iris2$exp2 = rep(2 ^ 5, n_rows)
+  iris2$exp3 = rep(2.2 ^ 3, n_rows) 
+
+
+  ##### Compare iris_result and iris2 #####
+
+  RUnit::checkEqualsNumeric( iris_result[,"Sepal.Area"] , iris2[,"Sepal.Area"])
+  RUnit::checkEqualsNumeric( iris_result[,"Petal.Area"] , iris2[,"Petal.Area"])
+  RUnit::checkEqualsNumeric( iris_result[,"Sepal.Petal.Ratio"] , iris2[,"Sepal.Petal.Ratio"])
+  RUnit::checkEqualsNumeric( iris_result[,"exp"] , iris2[,"exp"])
+  RUnit::checkEqualsNumeric( iris_result[,"exp2"] , iris2[,"exp2"])
+  RUnit::checkEqualsNumeric( iris_result[,"exp3"] , iris2[,"exp3"])
+}
+
+test_arithmetic()
+```
+
+#### Test if statements
+
+The following code creates new columns from mtcars datset as follows.
+
+* 'power' column : If the hp column value is larger than 145, "powerful" is assigned. Between 0 to 145, "low power" is assigned.
+* 'efficient' column : If the mpg column value is larger than 20, "efficient" is assigned. Between 0 to 20 "inefficient" is assigned.
+* 'description' column : Description for each car is created by concatnating name, power and efficient column values.
+
+```
+test_if <- function(){
+
+
+  ##### Create new columns using datasailr (mtcars_result) #####
+
+  data(mtcars)
+  mtcars[,"name"] = rownames(mtcars)
+
+  code = '
+power = \'\'
+if( hp > 145 ){
+  power = "powerful"
+}else if( 145 >= hp && hp > 0){
+  power = "low power"
+}else{
+  print("hp variable has missing value")
+}
+
+efficient = ""
+if( mpg > 20){
+  efficient = "efficient"
+}else if( 20 >= mpg && mpg > 0 ){
+  efficient = "inefficient"
+}else{
+  print("mpg variable has missing value")
+}
+
+description = name + " is " + power + " " + efficient + " car"
+  '
+
+  mtcars_result = datasailr::sail(mtcars, code)
+
+
+  ##### Create new columns using R's standard way (mtcars2) #####
+
+  mtcars2 = mtcars
+
+  mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )
+  mtcars2$efficient = ifelse( mtcars2$mpg > 20 , "efficient" , "inefficient" )
+  mtcars2$description = paste(mtcars2$name, "is", mtcars2$power, mtcars2$efficient, "car" )
+
+
+  ##### Compare mtcars_result and mtcars2 #####
+  
+  RUnit::checkEquals( mtcars_result[,"power"] , mtcars2[,"power"] )
+  RUnit::checkEquals( mtcars_result[,"efficient"] ,   mtcars2[,"efficient"] )
+  RUnit::checkEquals( mtcars_result[,"description"] , mtcars2[,"description"] )
+}
+
+test_if()
+```
+
+#### Test regular expressions
+
+The following code creates new columns from mtcars datset as follows.
+
+* 'power' column : If the hp column value is larger than 145, "powerful" is assigned. Between 0 to 145, "low power" is assigned.
+* 'country' column : This column is created based on pattern matchig with automobile names, which are stored in name column.
+    + Regular expression literal is re/pattern/ . In the following example, this regular expression is handled by variables, such as germany, usa, and japan.
+    + Regular expression matching operator is =~
+    + Regular expression matching is conducted in if-else statement. Based on matching results, country column values are assigned. 
+* 'description' column : Description for each car is created by concatenating name, power and country column values.
+
+```
+test_regexp  <- function(){
+  data(mtcars)
+  mtcars[,"name"] = rownames(mtcars)
+
+  ##### Create new columns using datasailr (mtcars_result) #####
+  
+  code = '
+germany = re/(^Merc|^Porsche|^Volvo)/
+usa = re/(^Hornet|^Cadillac|^Lincoln|^Chrysler|^Dodge|^AMC|^Camaro|^Chevrolet|^Pontiac|^Ford)/
+japan = re/(^Mazda|^Datsun|^Honda|^Toyota)/
+austoralia = re/(^Valiant)/
+france=re/(^Duster)/
+italy=re/(^Fiat|^Ferrari|^Maserati)/
+uk = re/(^Lotus)/
+
+power = ""
+if( hp > 145 ){
+  power = "powerful"
+}else if( 145 >= hp && hp > 0){
+  power = "low power"
+}else{
+  print("hp variable has missing value")
+  power = "unknown power"
+}
+
+country = ""
+if(name =~ germany){
+  country = "Germany"
+}else if(name =~ usa){
+  country = "USA"
+}else if(name =~ japan){
+  country = "Japan"
+}else if(name =~ austoralia){
+  country = "Austoralia"
+}else if(name =~ france){
+  country = "France"
+}else if(name =~ italy){
+  country = "Italy"
+}else if(name =~ uk){
+  country = "UK"
+}else{
+  country = "other country"
+}
+
+description = name + " is " +  power + " " + country + " made car."
+'
+
+  mtcars_result = datasailr::sail(mtcars, code)
+
+
+  ##### Create expected data frame manually (mtcars2) #####
+
+  mtcars2 = mtcars
+
+  mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )
+  country_list = c( rep("Japan", 3), rep("USA", 2), "Austoralia", "France", rep("Germany", 7), rep("USA", 3),  "Italy", rep("Japan",3), rep("USA",4), "Italy", "Germany", "UK", "USA", rep("Italy",2), "Germany")
+  mtcars2$country = country_list
+  mtcars2$description = paste0(mtcars2$name , " is ", mtcars2$power, " ", mtcars2$country, " made car.")
+
+
+  ##### Compare mtcars_result and mtcars2 #####
+
+  RUnit::checkEquals( mtcars_result[,"power"] , mtcars2[,"power"])
+  RUnit::checkEquals( mtcars_result[,"country"] , mtcars2[,"country"])
+  RUnit::checkEquals( mtcars_result[,"description"] , mtcars2[,"description"])
+}
+
+test_regexp()
+```
+
+#### Test pushing new rows
+
+The following code converts wide format data frame into long format.
+
+* The original data frame, wide_df, have subj, t0, t1, t2 and t3 columns
+* The result data frame has 'time' column.
+    * For each subject, four rows are created for each time point, 0, 1, 2 and 3.
+
+```
+test_push_rows <- function(){
+
+  ##### Prepare data frame in a wide format #####
+
+  wide_df = data.frame(
+    subj = c("Tom", "Mary", "Jack"),
+    t0 = c( 50, 42, 80),
+    t1 = c( 48, 42, 75),
+    t2 = c( 46, 44, 72),
+    t3 = c( 42, 42, 73)
+  )
+
+  ##### Convert it into long fortmat using datasailr. #####
+
+code = "
+  subject = subj
+  time = 0
+  bw = t0
+  push!()
+
+  time = 1
+  bw = t1 
+  push!()
+
+  time = 2
+  bw = t2
+  push!()
+
+  time = 3
+  bw = t3
+"
+
+long_df = datasailr::sail(wide_df , code = code, fullData=FALSE)
+
+  ##### From long format data frame, subset rows with subject name is "Tom" #####
+
+tom_long_df = long_df[long_df$subject=="Tom", ]
+
+  ##### Checking the result #####
+
+RUnit::checkEqualsNumeric( 4 * nrow(wide_df), nrow(long_df))
+RUnit::checkEqualsNumeric( tom_long_df$bw , c(50, 48, 46, 42))
+
+}
+
+test_push_rows()
+```
+
+
+
 
 ## How to run DataSailr script
 
