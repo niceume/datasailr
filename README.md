@@ -96,15 +96,15 @@ test_arithmetic <- function(){
 
   data(iris)
   code = "
-Sepal.Area = Sepal.Length * Sepal.Width
-Petal.Area = Petal.Length * Petal.Width
+    Sepal.Area = Sepal.Length * Sepal.Width
+    Petal.Area = Petal.Length * Petal.Width
  
-Sepal.Petal.Ratio = Sepal.Area / Petal.Area
+    Sepal.Petal.Ratio = Sepal.Area / Petal.Area
  
-exp = 2 ^ 5
-exp2 = 2 ** 5 
-exp3 = 2.2 ^ 3 
-"
+    exp = 2 ^ 5
+    exp2 = 2 ** 5 
+    exp3 = 2.2 ^ 3 
+  "
 
   iris_result = datasailr::sail(iris, code)
 
@@ -146,32 +146,31 @@ The following code creates new columns from mtcars datset as follows.
 ```
 test_if <- function(){
 
-
   ##### Create new columns using datasailr (mtcars_result) #####
 
   data(mtcars)
   mtcars[,"name"] = rownames(mtcars)
 
   code = '
-power = \'\'
-if( hp > 145 ){
-  power = "powerful"
-}else if( 145 >= hp && hp > 0){
-  power = "low power"
-}else{
-  print("hp variable has missing value")
-}
+    power = ""
+    if( hp > 145 ){
+      power = "powerful"
+    }else if( 145 >= hp && hp > 0){
+      power = "low power"
+    }else{
+      print("hp variable has missing value")
+    }
 
-efficient = ""
-if( mpg > 20){
-  efficient = "efficient"
-}else if( 20 >= mpg && mpg > 0 ){
-  efficient = "inefficient"
-}else{
-  print("mpg variable has missing value")
-}
+    efficient = ""
+    if( mpg > 20){
+      efficient = "efficient"
+    }else if( 20 >= mpg && mpg > 0 ){
+      efficient = "inefficient"
+    }else{
+      print("mpg variable has missing value")
+    }
 
-description = name + " is " + power + " " + efficient + " car"
+    description = name + " is " + power + " " + efficient + " car"
   '
 
   mtcars_result = datasailr::sail(mtcars, code)
@@ -215,45 +214,45 @@ test_regexp  <- function(){
   ##### Create new columns using datasailr (mtcars_result) #####
   
   code = '
-germany = re/(^Merc|^Porsche|^Volvo)/
-usa = re/(^Hornet|^Cadillac|^Lincoln|^Chrysler|^Dodge|^AMC|^Camaro|^Chevrolet|^Pontiac|^Ford)/
-japan = re/(^Mazda|^Datsun|^Honda|^Toyota)/
-austoralia = re/(^Valiant)/
-france=re/(^Duster)/
-italy=re/(^Fiat|^Ferrari|^Maserati)/
-uk = re/(^Lotus)/
+    germany = re/(^Merc|^Porsche|^Volvo)/
+    usa = re/(^Hornet|^Cadillac|^Lincoln|^Chrysler|^Dodge|^AMC|^Camaro|^Chevrolet|^Pontiac|^Ford)/
+    japan = re/(^Mazda|^Datsun|^Honda|^Toyota)/
+    austoralia = re/(^Valiant)/
+    france=re/(^Duster)/
+    italy=re/(^Fiat|^Ferrari|^Maserati)/
+    uk = re/(^Lotus)/
 
-power = ""
-if( hp > 145 ){
-  power = "powerful"
-}else if( 145 >= hp && hp > 0){
-  power = "low power"
-}else{
-  print("hp variable has missing value")
-  power = "unknown power"
-}
+    power = ""
+    if( hp > 145 ){
+      power = "powerful"
+    }else if( 145 >= hp && hp > 0){
+      power = "low power"
+    }else{
+      print("hp variable has missing value")
+      power = "unknown power"
+    }
 
-country = ""
-if(name =~ germany){
-  country = "Germany"
-}else if(name =~ usa){
-  country = "USA"
-}else if(name =~ japan){
-  country = "Japan"
-}else if(name =~ austoralia){
-  country = "Austoralia"
-}else if(name =~ france){
-  country = "France"
-}else if(name =~ italy){
-  country = "Italy"
-}else if(name =~ uk){
-  country = "UK"
-}else{
-  country = "other country"
-}
+    country = ""
+    if(name =~ germany){
+      country = "Germany"
+    }else if(name =~ usa){
+      country = "USA"
+    }else if(name =~ japan){
+      country = "Japan"
+    }else if(name =~ austoralia){
+      country = "Austoralia"
+    }else if(name =~ france){
+      country = "France"
+    }else if(name =~ italy){
+      country = "Italy"
+    }else if(name =~ uk){
+      country = "UK"
+    }else{
+      country = "other country"
+    }
 
-description = name + " is " +  power + " " + country + " made car."
-'
+    description = name + " is " +  power + " " + country + " made car."
+  '
 
   mtcars_result = datasailr::sail(mtcars, code)
 
@@ -301,35 +300,34 @@ test_push_rows <- function(){
 
   ##### Convert it into long fortmat using datasailr. #####
 
-code = "
-  subject = subj
-  time = 0
-  bw = t0
-  push!()
+  code = "
+    subject = subj
+    time = 0
+    bw = t0
+    push!()
 
-  time = 1
-  bw = t1 
-  push!()
+    time = 1
+    bw = t1 
+    push!()
 
-  time = 2
-  bw = t2
-  push!()
+    time = 2
+    bw = t2
+    push!()
 
-  time = 3
-  bw = t3
-"
+    time = 3
+    bw = t3
+  "
 
-long_df = datasailr::sail(wide_df , code = code, fullData=FALSE)
+  long_df = datasailr::sail(wide_df , code = code, fullData=FALSE)
 
   ##### From long format data frame, subset rows with subject name is "Tom" #####
 
-tom_long_df = long_df[long_df$subject=="Tom", ]
+  tom_long_df = long_df[long_df$subject=="Tom", ]
 
   ##### Checking the result #####
 
-RUnit::checkEqualsNumeric( 4 * nrow(wide_df), nrow(long_df))
-RUnit::checkEqualsNumeric( tom_long_df$bw , c(50, 48, 46, 42))
-
+  RUnit::checkEqualsNumeric( 4 * nrow(wide_df), nrow(long_df))
+  RUnit::checkEqualsNumeric( tom_long_df$bw , c(50, 48, 46, 42))
 }
 
 test_push_rows()
