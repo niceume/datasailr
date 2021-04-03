@@ -48,6 +48,9 @@ The following example script conducts data processing for R's built-in 'mtcars' 
 library(datasailr)
 data(mtcars)
 
+# datasailr::sail() function takes data frame for its first argument,
+# and DataSailr script as character for its second argument.
+
 result = datasailr::sail( mtcars, '
   // Comments in DataSailr start with double slashes
   // if-else statement:
@@ -99,7 +102,7 @@ result = datasailr::sail( mtcars, '
   }
   
   // built-in function str_concat()
-  desc = str_concat( "", powerful, efficient)
+  desc = str_concat( powerful, efficient)
 ' )
 
 # show the first 10 rows of result data frame.
