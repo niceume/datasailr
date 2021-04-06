@@ -1,16 +1,16 @@
 test_arithmetic <- function(){
   data(iris)
   code = "
-Sepal.Area = Sepal.Length * Sepal.Width
-Petal.Area = Petal.Length * Petal.Width
- 
-Sepal.Petal.Ratio = Sepal.Area / Petal.Area
- 
-exp = 2 ^ 5
-exp2 = 2 ** 5 
-exp3 = 2.2 ^ 3 
-"
-iris_result = iris
+    Sepal.Area = Sepal.Length * Sepal.Width
+    Petal.Area = Petal.Length * Petal.Width
+
+    Sepal.Petal.Ratio = Sepal.Area / Petal.Area
+
+    exp = 2 ^ 5
+    exp2 = 2 ** 5 
+    exp3 = 2.2 ^ 3 
+  "
+  iris_result = iris
   iris_result = datasailr::sail(iris, code)
 
   iris2 = iris;

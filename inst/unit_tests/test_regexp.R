@@ -3,45 +3,45 @@ test_regexp  <- function(){
   mtcars[,"name"] = rownames(mtcars)
   
   code = '
-germany = re/(^Merc|^Porsche|^Volvo)/
-usa = re/(^Hornet|^Cadillac|^Lincoln|^Chrysler|^Dodge|^AMC|^Camaro|^Chevrolet|^Pontiac|^Ford)/
-japan = re/(^Mazda|^Datsun|^Honda|^Toyota)/
-austoralia = re/(^Valiant)/
-france=re/(^Duster)/
-italy=re/(^Fiat|^Ferrari|^Maserati)/
-uk = re/(^Lotus)/
+    germany = re/(^Merc|^Porsche|^Volvo)/
+    usa = re/(^Hornet|^Cadillac|^Lincoln|^Chrysler|^Dodge|^AMC|^Camaro|^Chevrolet|^Pontiac|^Ford)/
+    japan = re/(^Mazda|^Datsun|^Honda|^Toyota)/
+    austoralia = re/(^Valiant)/
+    france=re/(^Duster)/
+    italy=re/(^Fiat|^Ferrari|^Maserati)/
+    uk = re/(^Lotus)/
 
-power = ""
-if( hp > 145 ){
-  power = "powerful"
-}else if( 145 >= hp && hp > 0){
-  power = "low power"
-}else{
-  print("hp variable has missing value")
-  power = "unknown power"
-}
+    power = ""
+    if( hp > 145 ){
+      power = "powerful"
+    }else if( 145 >= hp && hp > 0){
+      power = "low power"
+    }else{
+      print("hp variable has missing value")
+      power = "unknown power"
+    }
 
-country = ""
-if(name =~ germany){
-  country = "Germany"
-}else if(name =~ usa){
-  country = "USA"
-}else if(name =~ japan){
-  country = "Japan"
-}else if(name =~ austoralia){
-  country = "Austoralia"
-}else if(name =~ france){
-  country = "France"
-}else if(name =~ italy){
-  country = "Italy"
-}else if(name =~ uk){
-  country = "UK"
-}else{
-  country = "other country"
-}
+    country = ""
+    if(name =~ germany){
+      country = "Germany"
+    }else if(name =~ usa){
+      country = "USA"
+    }else if(name =~ japan){
+      country = "Japan"
+    }else if(name =~ austoralia){
+      country = "Austoralia"
+    }else if(name =~ france){
+      country = "France"
+    }else if(name =~ italy){
+      country = "Italy"
+    }else if(name =~ uk){
+      country = "UK"
+    }else{
+      country = "other country"
+    }
 
-description = name + " is " +  power + " " + country + " made car."
-'
+    description = name + " is " +  power + " " + country + " made car."
+  '
 
   mtcars_result = datasailr::sail(mtcars, code)
   mtcars2 = mtcars
