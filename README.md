@@ -153,9 +153,9 @@ else { country = "Other" }
     + assign "high" to power column.
 * germany = re/(^Merc|^Porsche|^Volvo)/
     + Regular expression literal is re/pattern/ .
-* if ( _rowname_ =~ germany ){ ....
+* if ( \_rowname\_ =~ germany ){ ....
     + string =~ regular expression executes regular expression matching.
-    + _rowname_ column is one of automatic variables. This holds the row names of the original R dataframe.
+    + \_rowname\_ column is one of automatic variables. This holds the row names of the original R dataframe.
 * rexp_matched(1)
     + Calling function of rexp_matched()
     + Extract the 1st matching group from the last regular expression matching.
