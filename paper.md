@@ -44,7 +44,7 @@ The following example script conducts data processing for R's built-in 'mtcars' 
 
 * Example
 
-```
+```r
 library(datasailr)
 data(mtcars)
 
