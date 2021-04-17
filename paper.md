@@ -18,7 +18,7 @@ bibliography: paper.bib
 
 # Summary
 
-Data processing and data cleaning are essential steps before applying statistical or machine learning procedures. R provides a flexible way for data processing using vectors. Additional R packages also provide other ways for manipulating data such as using SQL and using chained functions. I present yet another way to process data in a row by row manner using data manipulation oriented script, DataSailr script. The script enables users to instruct data processing in a row wise manner, and the script is intuitive and easy to learn. This article introduces the datasailr package, and potential benefits of this row wise approach.
+Data processing and data cleaning are essential steps before applying statistical or machine learning procedures[@pyle1999; @garcia2015]. R provides a flexible way for data processing using vectors. Additional R packages also provide other ways for manipulating data such as using SQL and using chained functions. I present yet another way to process data in a row by row manner using data manipulation oriented script, DataSailr script. The script enables users to instruct data processing in a row wise manner, and the script is intuitive and easy to learn. This article introduces the datasailr package, and potential benefits of this row wise approach.
 
 
 # Statement of Need
