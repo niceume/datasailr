@@ -622,6 +622,31 @@ The core engine of this package is libsailr. Libsailr takes Sailr script and doe
 
 DataSailr internals are described in the official website.
 
+
+## Community Guidelines
+
+### When you wish to contribute to the software
+
+This project's repository is on [Github](https://github.com/niceume/datasailr). Currently, for both development and releases, only master branch is used. 
+
+Please feel free to fork the branch, and please send pull requests to me.
+
+
+### When you report issues or problems with the software 
+
+Please report issues or problems on Github.
+
+
+### When you seek support
+
+For support, there are online resources, a duscussion board and an email.
+
+* You can read documents on [Official website](https://datasailr.io).
+* You can ask questions on [Github discussion board](https://github.com/niceume/datasailr/discussions)
+* You can send an email to the maintainer. (email address is described below)
+
+
+
 ## Contact
 
 Your feedback is welcome. 
