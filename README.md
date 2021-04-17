@@ -2,16 +2,18 @@
 
 DataSailr is an R package which enables row by row data manipulation. 
 
-The data manipulation process is written in DataSailr script, which is designed specifically for data manipulation. The internal data manipulation engine is a library called libsailr, which is written in C/C++ and the processing speed is relatively fast. If you are interested in DataSailr's internal implementation, please also have a look at libsailr library.
+The data manipulation process is instructed using DataSailr script, which is designed specifically for data manipulation. The internal data manipulation engine is a library called libsailr, which is written in C/C++. If you are interested in DataSailr's internal implementation, please also have a look at libsailr library.
 
-This package is still in development. Please let me know if you find bugs or inconsistent behaviors. The documentation is not enough, so I am willing to explain it if you find something difficult.
+This package is still in development. Please let me know if you find bugs or inconsistent behaviors. Please also read community guidelines at the end of this document, when you wish to contribute to this software, report issues or problems, or need supports.
 
 
-## Description & Motivation
+## Motivation
 
-DataSailr package brings intuitive and fast row by row data manipulation to R. The data manipulation instruction for each row is written in DataSailr script. DataSailr script is an easy script designed especially for data manipulation. In vanilla R, dataframe is manipulated using column vector and vector operations. When summarizing dataframe, column wise calculation is intuitive and ideal, but when manipulating dataframe you need to see each record in the row direction. For example, when calculating body mass index (BMI) from body weight and height, calculation needs to be done for each row. Categorizing each person based on his/her BMI is also done for each row.
+Data processing and data cleaning are essential steps before applying statistical or machine learning procedures. R provides a flexible way for data processing using vectors. Additional R packages also provide other ways for manipulating data such as using SQL and using chained functions. The datasailr package provides yet another way to process data in a row by row manner using data manipulation oriented script, DataSailr script. The script enables users to instruct data processing in a row wise manner, and the script is intuitive and easy to learn. This row by row approach is different from R's built-in functionality, which provides data processing through column vector calculations. Row wise approach does not require vectors, and can be intuitive compared to R's default column vector approach.
 
-A famous R package, dplyr, has been improving the same kind of points. It enables data manipulation without thinking much about column vectors. Pipe operator, %>% in magrittr package, and dplyr functions realize intuitive data manipulation flow. The DataSailr package enables the same kind of thing with a single DataSailr code. The two packages do not compete, and I intend to implement DataSailr as it also can work with dplyr.
+DataSailr script is a domain specific language for data processing. Using domain specific language for data manipulation is a similar approach to SAS software (SAS and all other SAS Institute Inc. product or service names are registered trademarks or trademarks of SAS Institute Inc. in the USA and other countries). SAS software provides DATA blocks, within which users can write scripts that are specific for data manipulation in a row wise manner. The separation of data manipulation steps and statistical procedures has a benefit of improved readability. Its row wise data manipulation script is easy to understand and learn. DataSailr brings the same kind of experience to R.
+
+As mentioned, there are R packages that have been improving data manipulation, such as sqldf and dplyr. The sqldf package enables users to write SQL for data manipulation. The dplyr package enables users to write data manipulation procedures in a sequential way by chaining functions without thinking much about column vectors. DataSailr enables the same kind of things with a single DataSailr script.
 
 
 ## How to install
@@ -91,9 +93,7 @@ The following code creates new columns from iris datset as follows.
 
 ```
 test_arithmetic <- function(){
-
   ##### Create new columns using datasailr (iris_result) #####
-
   data(iris)
   code = "
     Sepal.Area = Sepal.Length * Sepal.Width
@@ -105,12 +105,8 @@ test_arithmetic <- function(){
     exp2 = 2 ** 5 
     exp3 = 2.2 ^ 3 
   "
-
   iris_result = datasailr::sail(iris, code)
-
-
   ##### Create new columns using R's standard way (iris2) #####
-
   iris2 = iris;
   iris2[,"Sepal.Area"] = iris2[,"Sepal.Length"] * iris2[,"Sepal.Width"]
   iris2[,"Petal.Area"] = iris2[,"Petal.Length"] * iris2[,"Petal.Width"]
@@ -120,10 +116,7 @@ test_arithmetic <- function(){
   iris2$exp = rep(2 ^ 5, n_rows)
   iris2$exp2 = rep(2 ^ 5, n_rows)
   iris2$exp3 = rep(2.2 ^ 3, n_rows) 
-
-
   ##### Compare iris_result and iris2 #####
-
   RUnit::checkEqualsNumeric( iris_result[,"Sepal.Area"] , iris2[,"Sepal.Area"])
   RUnit::checkEqualsNumeric( iris_result[,"Petal.Area"] , iris2[,"Petal.Area"])
   RUnit::checkEqualsNumeric( iris_result[,"Sepal.Petal.Ratio"] , iris2[,"Sepal.Petal.Ratio"])
@@ -131,7 +124,6 @@ test_arithmetic <- function(){
   RUnit::checkEqualsNumeric( iris_result[,"exp2"] , iris2[,"exp2"])
   RUnit::checkEqualsNumeric( iris_result[,"exp3"] , iris2[,"exp3"])
 }
-
 test_arithmetic()
 ```
 
@@ -145,12 +137,9 @@ The following code creates new columns from mtcars datset as follows.
 
 ```
 test_if <- function(){
-
   ##### Create new columns using datasailr (mtcars_result) #####
-
   data(mtcars)
   mtcars[,"name"] = rownames(mtcars)
-
   code = '
     power = ""
     if( hp > 145 ){
@@ -160,7 +149,6 @@ test_if <- function(){
     }else{
       print("hp variable has missing value")
     }
-
     efficient = ""
     if( mpg > 20){
       efficient = "efficient"
@@ -169,29 +157,20 @@ test_if <- function(){
     }else{
       print("mpg variable has missing value")
     }
-
     description = name + " is " + power + " " + efficient + " car"
   '
-
   mtcars_result = datasailr::sail(mtcars, code)
-
-
   ##### Create new columns using R's standard way (mtcars2) #####
-
   mtcars2 = mtcars
-
   mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )
   mtcars2$efficient = ifelse( mtcars2$mpg > 20 , "efficient" , "inefficient" )
   mtcars2$description = paste(mtcars2$name, "is", mtcars2$power, mtcars2$efficient, "car" )
-
-
   ##### Compare mtcars_result and mtcars2 #####
   
   RUnit::checkEquals( mtcars_result[,"power"] , mtcars2[,"power"] )
   RUnit::checkEquals( mtcars_result[,"efficient"] ,   mtcars2[,"efficient"] )
   RUnit::checkEquals( mtcars_result[,"description"] , mtcars2[,"description"] )
 }
-
 test_if()
 ```
 
@@ -210,7 +189,6 @@ The following code creates new columns from mtcars datset as follows.
 test_regexp  <- function(){
   data(mtcars)
   mtcars[,"name"] = rownames(mtcars)
-
   ##### Create new columns using datasailr (mtcars_result) #####
   
   code = '
@@ -221,7 +199,6 @@ test_regexp  <- function(){
     france=re/(^Duster)/
     italy=re/(^Fiat|^Ferrari|^Maserati)/
     uk = re/(^Lotus)/
-
     power = ""
     if( hp > 145 ){
       power = "powerful"
@@ -231,7 +208,6 @@ test_regexp  <- function(){
       print("hp variable has missing value")
       power = "unknown power"
     }
-
     country = ""
     if(name =~ germany){
       country = "Germany"
@@ -250,30 +226,20 @@ test_regexp  <- function(){
     }else{
       country = "other country"
     }
-
     description = name + " is " +  power + " " + country + " made car."
   '
-
   mtcars_result = datasailr::sail(mtcars, code)
-
-
   ##### Create expected data frame manually (mtcars2) #####
-
   mtcars2 = mtcars
-
   mtcars2$power = ifelse( mtcars2$hp > 145 , "powerful" , "low power" )
   country_list = c( rep("Japan", 3), rep("USA", 2), "Austoralia", "France", rep("Germany", 7), rep("USA", 3),  "Italy", rep("Japan",3), rep("USA",4), "Italy", "Germany", "UK", "USA", rep("Italy",2), "Germany")
   mtcars2$country = country_list
   mtcars2$description = paste0(mtcars2$name , " is ", mtcars2$power, " ", mtcars2$country, " made car.")
-
-
   ##### Compare mtcars_result and mtcars2 #####
-
   RUnit::checkEquals( mtcars_result[,"power"] , mtcars2[,"power"])
   RUnit::checkEquals( mtcars_result[,"country"] , mtcars2[,"country"])
   RUnit::checkEquals( mtcars_result[,"description"] , mtcars2[,"description"])
 }
-
 test_regexp()
 ```
 
@@ -287,9 +253,7 @@ The following code converts wide format data frame into long format.
 
 ```
 test_push_rows <- function(){
-
   ##### Prepare data frame in a wide format #####
-
   wide_df = data.frame(
     subj = c("Tom", "Mary", "Jack"),
     t0 = c( 50, 42, 80),
@@ -297,39 +261,28 @@ test_push_rows <- function(){
     t2 = c( 46, 44, 72),
     t3 = c( 42, 42, 73)
   )
-
   ##### Convert it into long fortmat using datasailr. #####
-
   code = "
     subject = subj
     time = 0
     bw = t0
     push!()
-
     time = 1
     bw = t1 
     push!()
-
     time = 2
     bw = t2
     push!()
-
     time = 3
     bw = t3
   "
-
   long_df = datasailr::sail(wide_df , code = code, fullData=FALSE)
-
   ##### From long format data frame, subset rows with subject name is "Tom" #####
-
   tom_long_df = long_df[long_df$subject=="Tom", ]
-
   ##### Checking the result #####
-
   RUnit::checkEqualsNumeric( 4 * nrow(wide_df), nrow(long_df))
   RUnit::checkEqualsNumeric( tom_long_df$bw , c(50, 48, 46, 42))
 }
-
 test_push_rows()
 ```
 
@@ -896,6 +849,31 @@ DataSailr's special feature is that you can write multiple row level manipulatio
 The core engine of this package is libsailr. Libsailr takes Sailr script and does arithmetic calculations and string/character manipulations. This R package wraps libsair, and passes values of each row to the libsailr library. The results of each row will be returned as each row of new dataframe.
 
 DataSailr internals are described in the official website.
+
+
+## Community Guidelines
+
+### When you wish to contribute to the software
+
+This project's repository is on [Github](https://github.com/niceume/datasailr). Currently, for both development and releases, only master branch is used. 
+
+Please feel free to fork the branch, and please send pull requests to me.
+
+
+### When you report issues or problems with the software 
+
+Please report issues or problems on Github.
+
+
+### When you seek support
+
+For support, there are online resources, a duscussion board and an email.
+
+* You can read documents on [Official website](https://datasailr.io).
+* You can ask questions on [Github discussion board](https://github.com/niceume/datasailr/discussions)
+* You can send an email to the maintainer. (email address is described below)
+
+
 
 ## Contact
 
