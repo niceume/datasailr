@@ -96,7 +96,3 @@ sail = function( df , code , fullData = TRUE , rowname = "_rowname_" , stringsAs
 	return(result_df)
 }
 
-
-author = function(){
-  print("DataSailr is actively developed by Toshi Umehara (@niceume).")
-}
