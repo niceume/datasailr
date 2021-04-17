@@ -27,6 +27,8 @@ The [datasailr](https://CRAN.R-project.org/package=datasailr) package enables us
 
 DataSailr script is a domain specific language for data processing. Using domain specific language for data manipulation is a similar approach to SAS^[SAS and all other SAS Institute Inc. product or service names are registered trademarks or trademarks of SAS Institute Inc. in the USA and other countries.] software[@sas1985sas:1985]. SAS software provides DATA blocks, within which users can write scripts that are specific for data manipulation in a row wise manner. The separation of data manipulation steps and statistical procedures has a benefit of improved readability. Its row wise data manipulation script is easy to understand and learn. DataSailr brings the same kind of experience to R.
 
+For example, you have student health data and you need to calculate each student's body mass index (BMI) from their body weight and height. Using R's built-in functionality, you need to access body weight and height as column vectors, conduct vector calculation, and assign the result vector to BMI column. DataSailr script, on the other hand, enables you to write code as how to calculate BMI for each person.
+
 There are also other R packages that have been improving data manipulation, such as sqldf[@sqldf:2017] and dplyr[@dplyr:2021]. The sqldf package enables users to write SQL for data manipulation. The dplyr package enables users to write data manipulation procedures in a sequential way by chaining functions without thinking much about column vectors. DataSailr enables the same kind of things with a single DataSailr script.
 
 
