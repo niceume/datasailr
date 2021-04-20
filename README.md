@@ -106,7 +106,7 @@ Before executing the following code, install DataSailr package (and magrittr pac
 library(datasailr)
 library(magrittr)
 
-mtcars %>% datasailr::sail('
+result = mtcars %>% datasailr::sail('
 if( hp > 145 ){  power = "high" }
 else if( 145 >= hp && hp > 0){ power = "low" }
 else{  print("hp variable has missing value")}
@@ -119,25 +119,27 @@ if ( _rowname_ =~ germany ) { country = "Germany" ; type = rexp_matched(1); }
 else if( _rowname_ =~ usa ) { country = "USA"  ; type = rexp_matched(1);  }
 else if( _rowname_ =~ japan ) { country = "Japan"  ; type = rexp_matched(1); }
 else { country = "Other" }
-') %>% head(10)
+')
+
+head(result[,c("hp","power","country", "type")], 10)
 ```
 
 
 * (OUTPUT)
-
 	
-|   | power | country | type
-----|-------|---------|-----
-| 1 | low   | Japan   | Mazda	
-| 2 | low   | Japan   | Mazda	
-| 3 | low   | Japan   | Datsun	
-| 4 | low   | USA     | Hornet	
-| 5 | high  | USA     | Hornet	
-| 6 | low   | Other   |
-| 7 | high  | Other   |
-| 8 | low   | Germany | Merc	
-| 9 | low   | Germany | Merc	
-| 10 | low  | Germany | Merc
+|                  | hp | power | country | type
+-------------------|----|-------|---------|-----
+|Mazda RX4         |110 | low   | Japan   | Mazda
+|Mazda RX4 Wag     |110 | low   | Japan   | Mazda
+|Datsun 710        |93  | low   | Japan   | Datsun
+|Hornet 4 Drive    |110 | low   | USA     | Hornet
+|Hornet Sportabout |175 | high  | USA     | Hornet
+|Valiant           |105 | low   | Other   |
+|Duster 360        |245 | high  | Other   |
+|Merc 240D         |62  | low   | Germany | Merc
+|Merc 230          |95  | low   | Germany | Merc
+|Merc 280          |123 | low   | Germany | Merc
+
 
 
 ### Example code explanation
