@@ -1,5 +1,11 @@
 # HISTORY
 
+## Version 0.8.8
+
+* This package now can be successfully built on FreeBSD.
+* README is updated.
+* Only sail() function is now exported. test_sail() function is now changed to an internal function.
+
 ## Version 0.8.7
 
 * Thanksgiving Day Release (11/26/2020)
