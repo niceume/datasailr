@@ -873,6 +873,10 @@ For support, there are online resources, a duscussion board and an email.
 * You can send an email to the maintainer. (email address is described below)
 
 
+## Acknowledgements
+
+I would like to thank my children, Joichiro and Kaoruko for always giving me joy.
+
 
 ## Contact
 

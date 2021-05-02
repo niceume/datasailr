@@ -18,30 +18,30 @@ bibliography: paper.bib
 
 # Summary
 
-Data processing and data cleaning are essential steps before applying statistical or machine learning procedures [@pyle1999; @garcia2015]. R provides a flexible way for data processing using vectors. Additional R packages also provide other ways for manipulating data such as using SQL and using chained functions. I present yet another way to process data in a row by row manner using data manipulation oriented script, DataSailr script. The script enables users to instruct data processing in a row-wise manner, and the script is intuitive and easy to learn. This article introduces the datasailr package, and potential benefits of this row-wise approach.
+Data processing and data cleaning are essential steps before applying statistical or machine learning procedures [@pyle1999; @garcia2015]. R provides a flexible way for data processing using vectors. Additional R packages also provide other ways for manipulating data such as using SQL and using chained functions. This work presents yet another way to process data in a row by row manner using a data manipulation oriented script, DataSailr script. The script enables users to instruct data processing in a row-wise manner, and the script is intuitive and easy to learn. This article introduces the datasailr package, and potential benefits of this row-wise approach.
 
 
 # Statement of Need
 
-The [datasailr](https://CRAN.R-project.org/package=datasailr) package enables users to instruct data processing in a row-wise manner using DataSailr script, which is an easy and intuitive script designed especially for data manipulation. This row by row approach is different from R's built-in functionality, which provides data processing through column vector calculations. Row-wise approach does not require vectors, and can be intuitive compared to R's default column vector approach.
+The [datasailr](https://CRAN.R-project.org/package=datasailr) package enables users to instruct data processing in a row-wise manner using DataSailr script, which is an easy and intuitive script designed especially for data manipulation. This row by row approach is different from R's built-in functionality, which provides data processing through column vector calculations. The row-wise approach does not require vectors, and can be intuitive compared to R's default column vector approach.
 
-DataSailr script is a domain-specific language for data processing. Using domain-specific language for data manipulation is a similar approach to SAS^[SAS and all other SAS Institute Inc. product or service names are registered trademarks or trademarks of SAS Institute Inc. in the USA and other countries.] software [@sas1985sas:1985]. SAS software provides DATA blocks, within which users can write scripts that are specific for data manipulation in a row-wise manner. The separation of data manipulation steps and statistical procedures has a benefit of improved readability. Its row-wise data manipulation script is easy to understand and learn. DataSailr brings the same kind of experience to R.
+The DataSailr script is a domain-specific language for data processing. Using domain-specific language for data manipulation is a similar approach to SAS^[SAS and all other SAS Institute Inc. product or service names are registered trademarks or trademarks of SAS Institute Inc. in the USA and other countries.] software [@sas1985sas:1985]. SAS software provides DATA blocks, within which users can write scripts that are specific for data manipulation in a row-wise manner. The separation of data manipulation steps and statistical procedures has a benefit of improved readability. Its row-wise data manipulation script is easy to understand and learn. DataSailr brings the same kind of experience to R.
 
-For example, you have student health data and you need to calculate each student's body mass index (BMI) from their body weight and height. Using R's built-in functionality, you need to access body weight and height as column vectors, conduct vector calculation, and assign the result vector to BMI column. DataSailr script, on the other hand, enables you to write code as how to calculate BMI for each person.
+For example, you have student health data and you need to calculate each student's body mass index (BMI) from their body weight and height. Using R's built-in functionality, you need to access body weight and height as column vectors, conduct vector calculation, and assign the result vector to a BMI column. DataSailr script, on the other hand, enables you to write code as how to calculate BMI for each person.
 
 There are also other R packages that have been improving data manipulation, such as sqldf [@sqldf:2017] and dplyr [@dplyr:2021]. The sqldf package enables users to write SQL for data manipulation. The dplyr package enables users to write data manipulation procedures in a sequential way by chaining functions without thinking much about column vectors. DataSailr enables the same kind of things with a single DataSailr script.
 
 
 # How DataSailr Works
 
-The datasailr package has a main function called sail() function. It takes R's data frame and DataSailr script, and the data frame is processed following the script. The first argument is data frame. The second argument is DataSalr script, and each row is processed following this script as described in \autoref{fig:datasailr_workflow}.
+The datasailr package has a main function called sail(). It takes R's data frame and DataSailr script, and the data frame is processed following the script. The first argument is a data frame. The second argument is the DataSalr script, and each row is processed following this script as described in \autoref{fig:datasailr_workflow}.
 
 ![How DataSailr Processes Data.\label{fig:datasailr_workflow}](datasailr_workflow.png){width=80%}
 
 
 # DataSailr Script
 
-The following example script conducts data processing for R's built-in 'mtcars' data. The example script generates description, country and manufacturer columns for each car using hp (i.e. horse power) and mpg (i.e. miles per gallon) columns and row names. The row names contain names of cars. The script uses functionality of variable assignment, if-else statements, special variables, regular expression matching, backreference and built-in functions, which are explained in [README](https://github.com/niceume/datasailr/blob/master/README.md) and [DataSailr website](https://datasailr.io).
+The following example script conducts data processing for R's built-in 'mtcars' data. The example script generates description, country and manufacturer columns for each car using hp (i.e. horse power) and mpg (i.e. miles per gallon) columns and row names. The row names contain names of cars. The script uses functionality of variable assignment, if-else statements, special variables, regular expression matching, backreference and built-in functions, which are explained in the [README](https://github.com/niceume/datasailr/blob/master/README.md) and on the [DataSailr website](https://datasailr.io).
 
 
 * Example
@@ -127,11 +127,6 @@ Merc 240D          62 24.4          efficient Germany         Merc
 Merc 230           95 22.8          efficient Germany         Merc
 Merc 280          123 19.2          powerful  Germany         Merc
 ```
-
-
-# Acknowledgements
-
-I would like to thank my children, Joichiro and Kaoruko for always giving me joy.
 
 
 # References
