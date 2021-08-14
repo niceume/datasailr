@@ -1,7 +1,7 @@
 # autoconf setting 
 
 AC_PREREQ([2.69])
-AC_INIT([datasailr], 0.8.8, toshi@niceume.com)
+AC_INIT([datasailr], 0.8.9, toshi@niceume.com)
 AC_CONFIG_SRCDIR([src/Makevars.in])
 
 # Check R_HOME

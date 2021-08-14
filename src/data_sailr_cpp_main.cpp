@@ -725,6 +725,8 @@ vec_list_push_cloned_row(VEC_LIST* vl, int from_idx)
       std::get<3>(*it) = std::get<3>(*it) + 1; // increment size.
       break;
     case NILSXP:
+      column_vec1 = std::get<1>(*it);
+      nullvec = (std::vector<int>*)column_vec1;
       nullvec->push_back(0);
 
       std::get<3>(*it) = std::get<3>(*it) + 1; // increment size.

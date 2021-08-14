@@ -1,8 +1,8 @@
 Package: datasailr
 Type: Package
 Title: Row by Row Data Processing Tool, Using 'DataSailr' Script
-Version: 0.8.8
-Date: 2021-05-02
+Version: 0.8.9
+Date: 2021-08-14
 Maintainer: Toshihiro Umehara <toshi@niceume.com>
 Authors@R: person("Toshihiro", "Umehara", email="toshi@niceume.com", role=c("aut", "cre"))
 Description: A row by row data processing tool. You can write data processing code in 'DataSailr' script which is specially intended for data manipulation. The package uses 'libsailr' (C/C++ library) for its 'DataSailr' code parsing and its execution.

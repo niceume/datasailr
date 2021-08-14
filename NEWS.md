@@ -1,5 +1,9 @@
 # HISTORY
 
+## Version 0.8.9
+
+* Bug fix in vec_list_push_cloned_row() function.
+
 ## Version 0.8.8
 
 * This package now can be successfully built on FreeBSD.
