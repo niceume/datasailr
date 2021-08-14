@@ -32,7 +32,7 @@ sailr_external_add2( arg_list* arglist , unsigned int num_args, vm_stack* vmstac
 {
 	arg_item* arg = arglist;
 
-	double x1, x2, total ;
+	double x1 = 0, x2 = 0, total = 0 ;
 	if(arg_item_confirm_int(arg)){
 		x1 = (double) arg_item_int_value( arg );
 	}else if(arg_item_confirm_double(arg)){
