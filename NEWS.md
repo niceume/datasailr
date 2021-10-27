@@ -1,5 +1,10 @@
 # HISTORY
 
+## Version 0.8.10
+
+* Warnings are resolved.
+    + AC_HELP_STRING is replaced with AS_HELP_STRING in configure.ac
+
 ## Version 0.8.9
 
 * Bug fix in vec_list_push_cloned_row() function.

@@ -1,7 +1,7 @@
 # autoconf setting 
 
 AC_PREREQ([2.69])
-AC_INIT([datasailr], 0.8.9, toshi@niceume.com)
+AC_INIT([datasailr], 0.8.10, toshi@niceume.com)
 AC_CONFIG_SRCDIR([src/Makevars.in])
 
 # Check R_HOME
@@ -95,7 +95,7 @@ AC_ARG_ENABLE([datasailr-debug],
 # --configure-args='--with-user-onigmo=/ABSOLUTE/PATH/TO/ONIGMO/BUILD/DIR/'
 # allow for override
 AC_ARG_WITH([user-onigmo],
-            AC_HELP_STRING([--with-user-onigmo=/ABSOLUTE/PATH/TO/ONIGMO/BUILD/DIR/],
+            AS_HELP_STRING([--with-user-onigmo=/ABSOLUTE/PATH/TO/ONIGMO/BUILD/DIR/],
                            [absolute path to the directory where include and lib directories exist.]),
             [
              onigmo_include_path="${with_user_onigmo}/include"
@@ -105,7 +105,7 @@ AC_ARG_WITH([user-onigmo],
             [])
 
 AC_ARG_WITH([system-onigmo],
-            AC_HELP_STRING([--with-system-onigmo],
+            AS_HELP_STRING([--with-system-onigmo],
                            [use onigmo library on the user's system]),
             [
 			 which_onigmo="SYSTEM"
