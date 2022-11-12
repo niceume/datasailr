@@ -1,5 +1,11 @@
 # HISTORY
 
+## Version 0.8.11
+
+* Warnings are resolved.
+    + -Wstrict-prototypes warnings are resolved.
+    + st.h, st.c and regparse.c files are copied from 'ore' package (https://github.com/cran/ore).
+
 ## Version 0.8.10
 
 * Warnings are resolved.
