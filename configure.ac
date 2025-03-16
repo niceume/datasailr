@@ -16,13 +16,8 @@ r_include_path=`"${R_HOME}/bin/Rscript" -e 'cat(R.home("include"))'`
 add_r_include_path="-I${r_include_path} "
 
 # C++
-CXX11=`"${R_HOME}/bin/R" CMD config CXX11`
-if test -z "$CXX11"; then
-  AC_MSG_ERROR([No C++11 compiler is available])
-fi
-CXX11STD=`"${R_HOME}/bin/R" CMD config CXX11STD`
-CXX="${CXX11} ${CXX11STD}"
-CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXX11FLAGS`
+CXX=`"${R_HOME}/bin/R" CMD config CXX`
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 AC_LANG(C++)
 AC_REQUIRE_CPP
 AC_PROG_CXX
