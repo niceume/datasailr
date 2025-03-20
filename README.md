@@ -18,38 +18,34 @@ As mentioned, there are R packages that have been improving data manipulation, s
 
 ## How to install
 
-### CRAN
+### Install from source package
 
-DataSailr package is available on CRAN.
+Previously, DataSailr was available on CRAN, but it is only provided as a source on Github. You can download a source package and installs it by compiling it. DataSalir package is created by combining this repository with libsailr and Onigmo, which is done with DataSailr toolchain. The Github Action of the toolchain repositoy provides the source package. You can download it as follows and can install it on R.
 
 ```
-# Start R interpreter
-install.packages("datasailr")
+curl -f -L https://github.com/niceume/datasailr_toolchain/releases/download/0.8.12/datasailr_latest.tar.gz -o datasailr_latest.tar.gz
+
+R
+> install.packages("./datasailr_latest.tar.gz", repos = NULL, type="source")
 ```
-
-
-### Binaries
-
-Binaries are provided at "https://datasailr.io/download"
 
 
 ### Install from source
 
-For compilation, autotools, bison, flex and some other UNIX programs are required.
-
-DataSailr_toolchain repository provides a way to create CRAN package, and to install it. CRAN package requires some rules. For example, std::cout is not used, but Rcpp::Rcout needs to be used. Also, DataSailr repository itself does not include libsailr and Onigmo. When including those libraries for CRAN package, additional copy right holders need to be listed in DESCRIPTION file. If you do not need these modifications, installing from DataSailr repository itself is also an acceptable way..
-
-
 * Install from datasailr_toolchain repository
+
+You can also install DataSailr with DataSailr_toolchain repository by yourself. For compilation, autotools, bison, flex and some other UNIX programs are required.
 
 ```
 git clone https://github.com/niceume/datasailr_toolchain.git
 cd datasailr_toolchain
-./create_datasailr_pkg.sh
-./create_packages.sh
+./create_datasailr_source.sh
+./build_datasailr_package.sh
 ```
 
 * Install from datasailr repository
+
+It is also possible to install only with this repository just to run DataSailr. However it is not suited for distribution purpose, because some modifications are needed to be done by DataSailr_toolchain including collecting author information.
 
 ```
 git clone <datasailr repository>
@@ -643,7 +639,6 @@ Please report issues or problems on Github.
 
 For support, there are online resources, a duscussion board and an email.
 
-* You can read documents on [Official website](https://datasailr.io).
 * You can ask questions on [Github discussion board](https://github.com/niceume/datasailr/discussions)
 * You can send an email to the maintainer. (email address is described below)
 

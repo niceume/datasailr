@@ -1,5 +1,11 @@
 # HISTORY
 
+## Version 0.8.12
+
+* Warnings related to identifers such as exit, stdout and stderr being included in an archived file (libsailr.a) could not be resolved. This program depends on codes from other authors, such as Onigmo, uthash, bison and flex. Those identifiers seem to come from these codes.
+    + From this version, DataSailr is not available on CRAN.
+    + DataSailr is distributed on Github.
+
 ## Version 0.8.11
 
 * Warnings are resolved.
